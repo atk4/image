@@ -1,6 +1,6 @@
 FROM php:7.3-alpine
 
-RUN apk add icu-dev mysql-client postgresql-client postgresql-dev bash npm git && \
+RUN apk add icu-dev mysql-client postgresql-client postgresql-dev bash npm git jq && \
     docker-php-ext-install intl pdo_mysql pdo_pgsql
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 RUN apk add $PHPIZE_DEPS && \
