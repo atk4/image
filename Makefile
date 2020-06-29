@@ -1,4 +1,4 @@
-SUBDIRS = $(wildcard ?.?)
+SUBDIRS = $(wildcard [0-9].*)
 .PHONY: $(SUBDIRS)
 all: $(SUBDIRS)
 $(SUBDIRS):
