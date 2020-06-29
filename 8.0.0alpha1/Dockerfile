@@ -8,5 +8,6 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
     #pecl install xdebug && \
     #docker-php-ext-enable xdebug && \
     #apk del --purge $PHPIZE_DEPS postgresql-dev
+RUN touch /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 RUN npm install -g less clean-css uglify-js
 
