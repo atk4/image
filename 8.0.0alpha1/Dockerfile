@@ -1,4 +1,4 @@
-FROM php:8.0.0alpha1-alpine
+FROM php:8.0.0beta3-alpine
 
 RUN apk add icu-dev mysql-client postgresql-client postgresql-dev bash npm git jq neovim && \
     docker-php-ext-install intl pdo_mysql pdo_pgsql
