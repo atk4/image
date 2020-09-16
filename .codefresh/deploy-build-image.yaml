@@ -57,11 +57,13 @@ steps:
       t7_2:
         image: atk4/image:candidate-7.2
         registry: atk4
+        working_directory: "${{IMAGE_WORK_DIR}}"
         commands:
           - php test.php
       t8_0:
         image: atk4/image:candidate-8.0
         registry: atk4
+        working_directory: "${{IMAGE_WORK_DIR}}"
         commands:
           - php test.php
 
