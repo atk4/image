@@ -22,7 +22,7 @@ steps:
     type: parallel
     stage: build
     steps:
-      b7.3:
+      b7_3:
         type: build
         stage: build
         image_name: atk4/build
@@ -30,7 +30,7 @@ steps:
         registry: atk4
         dockerfile: 7.3/Dockerfile
 
-      b7.4:
+      b7_4:
         type: build
         stage: build
         image_name: atk4/build
