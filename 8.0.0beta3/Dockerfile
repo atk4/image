@@ -1,4 +1,4 @@
-FROM php:7.4-alpine
+FROM php:8.0.0beta3-alpine
 
 
 # install basic PHP
@@ -7,9 +7,14 @@ RUN apk add icu-dev mysql-client postgresql-client postgresql-dev bash npm git j
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # install xdebug PHP extension
-RUN pecl install xdebug && \
-    docker-php-ext-enable xdebug
-
+RUN git clone https://github.com/xdebug/xdebug \
+    && cd xdebug \
+    # the last working commit, because the php-src is not up to date yet in this alpine
+    && phpize \
+    && ./configure --enable-xdebug-dev \
+    && make all \
+    && make install \
+    && echo "zend_extension=xdebug.so" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
 # install Microsoft ODBC drivers
 # based on https://github.com/microsoft/msphpsql/issues/300#issuecomment-673143369
@@ -19,10 +24,11 @@ RUN curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac
     printf '\n' | apk add --allow-untrusted mssql-tools_17.6.1.1-1_amd64.apk && \
     ln -sfnv /opt/mssql-tools/bin/* /usr/bin
 
+# pdo_sqlsrv for PHP 8.0 is not available yet
 # install pdo_sqlsrv PHP extension
-RUN apk add libstdc++ unixodbc unixodbc-dev && \
-    pecl install pdo_sqlsrv && \
-    docker-php-ext-enable pdo_sqlsrv
+#RUN apk add libstdc++ unixodbc unixodbc-dev && \
+#    pecl install pdo_sqlsrv && \
+#    docker-php-ext-enable pdo_sqlsrv
 
 
 # install Oracle Instant client

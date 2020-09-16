@@ -1,0 +1,101 @@
+version: "1.0"
+stages:
+  - prepare
+  - build
+  - test
+  - push
+steps:
+  main_clone:
+    stage: prepare
+    type: git-clone
+    repo: atk4/image
+    revision: "${{CF_BRANCH}}"
+
+  create_dockerfiles:
+    stage: prepare
+    title: Propagate Dockerfiles
+    image: alpine
+    commands:
+      - apk add make && make
+
+  build:
+    type: parallel
+    stage: build
+    steps:
+      b7_2:
+        type: build
+        image_name: atk4/image
+        tag: candidate-7.2
+        registry: atk4
+        dockerfile: 7.2/Dockerfile
+
+      b7_3:
+        type: build
+        image_name: atk4/image
+        tag: candidate-7.3
+        registry: atk4
+        dockerfile: 7.3/Dockerfile
+
+      b7_4:
+        type: build
+        image_name: atk4/image
+        tag: candidate-7.4
+        registry: atk4
+        dockerfile: 7.4/Dockerfile
+
+      b8_0:
+        type: build
+        image_name: atk4/image
+        tag: candidate-8.0
+        registry: atk4
+        dockerfile: 8.0.0beta3/Dockerfile
+
+  test:
+    type: parallel
+    stage: test
+    steps:
+      t7_2:
+        image: atk4/image:candidate-7.2
+        registry: atk4
+        commands:
+          - php test.php
+      t7_3:
+        image: atk4/image:candidate-7.3
+        registry: atk4
+        commands:
+          - php test.php
+      t7_4:
+        image: atk4/image:candidate-7.4
+        registry: atk4
+        commands:
+          - php test.php
+      t8_0:
+        image: atk4/image:candidate-8.0
+        registry: atk4
+        commands:
+          - php test.php
+
+  push:
+    type: parallel
+    stage: push
+    steps:
+      p7_2:
+        candidate: "${{b7_2}}"
+        type: push
+        registry: atk4
+        tag: "7.2"
+      p7_3:
+        candidate: "${{b7_3}}"
+        type: push
+        registry: atk4
+        tag: "7.3"
+      p7_4:
+        candidate: "${{b7_4}}"
+        type: push
+        registry: atk4
+        tag: "7.4"
+      p8_0:
+        candidate: "${{b8_0}}"
+        type: push
+        registry: atk4
+        tag: "8.0"
