@@ -9,3 +9,5 @@ This repository builds and publishes the following images:
 ## Running Locally
 
 Run `make build` to regenerate Dockerfiles and to rebuild all docker images. Check "Makefile" for more details
+
+
