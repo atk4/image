@@ -1,0 +1,27 @@
+version: "1.0"
+stages:
+  - prepare
+  - build
+  - push
+  - deploy
+steps:
+  main_clone:
+    stage: prepare
+    type: git-clone
+    repo: atk4/image
+    revision: "${{CF_BRANCH}}"
+
+  fix_sha:
+    stage: prepare
+    title: Propagate Dockerfiles
+    image: alpine
+    commands:
+      - make
+
+  build:
+    type: build
+    stage: build
+    image_name: atk4/build:7.4
+    registry: atk4
+    dockerfile: 7.4/Dockerfile
+

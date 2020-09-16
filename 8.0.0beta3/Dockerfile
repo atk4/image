@@ -6,12 +6,15 @@ RUN apk add icu-dev mysql-client postgresql-client postgresql-dev bash npm git j
     docker-php-ext-install intl pdo_mysql pdo_pgsql && \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# xdebug for PHP 8.0 is not available yet
 # install xdebug PHP extension
-#RUN pecl install xdebug && \
-#    docker-php-ext-enable xdebug
-RUN touch /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-
+RUN git clone https://github.com/xdebug/xdebug \
+    && cd xdebug \
+    # the last working commit, because the php-src is not up to date yet in this alpine
+    && phpize \
+    && ./configure --enable-xdebug-dev \
+    && make all \
+    && make install \
+    && echo "zend_extension=xdebug.so" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
 # install Microsoft ODBC drivers
 # based on https://github.com/microsoft/msphpsql/issues/300#issuecomment-673143369
