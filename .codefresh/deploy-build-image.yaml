@@ -84,3 +84,18 @@ steps:
         type: push
         registry: atk4
         tag: "7.2"
+      p7_3:
+        candidate: "${{b7_3}}"
+        type: push
+        registry: atk4
+        tag: "7.3"
+      p7_4:
+        candidate: "${{b7_4}}"
+        type: push
+        registry: atk4
+        tag: "7.4"
+      p8_0:
+        candidate: "${{b8_0}}"
+        type: push
+        registry: atk4
+        tag: "8.0"
