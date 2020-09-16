@@ -87,4 +87,4 @@ steps:
         candidate: "${{b7_2}}"
         type: push
         registry: atk
-        tag: 7.2
+        tag: "7.2"
