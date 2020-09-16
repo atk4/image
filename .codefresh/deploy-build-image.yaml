@@ -3,7 +3,7 @@ stages:
   - prepare
   - build
   - test
-  - tag
+  - push
 steps:
   main_clone:
     stage: prepare
@@ -79,3 +79,12 @@ steps:
         commands:
           - php test.php
 
+  push:
+    type: parallel
+    stage: push
+    steps:
+      p7_2:
+        candidate: "${{b7_2}}"
+        type: push
+        registry: atk
+        tag: 7.2
