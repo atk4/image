@@ -18,7 +18,7 @@ steps:
     commands:
       - apk add make && make
 
-  build:
+  build1:
     type: parallel
     stage: build
     steps:
@@ -36,6 +36,10 @@ steps:
         registry: atk4
         dockerfile: 7.3/Dockerfile
 
+  build2:
+    type: parallel
+    stage: build
+    steps:
       b7_4:
         type: build
         image_name: atk4/image
