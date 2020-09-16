@@ -1,5 +1,5 @@
 FROM php:7.4-alpine
-# ^^ "make" will override verison
+# ^^ "make" will override version
 
 
 # install basic PHP
