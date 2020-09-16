@@ -24,4 +24,3 @@ steps:
     image_name: atk4/build:7.4
     registry: atk4
     dockerfile: 7.4/Dockerfile
-
