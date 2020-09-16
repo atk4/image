@@ -19,8 +19,21 @@ steps:
       - apk add make && make
 
   build:
-    type: build
+    type: parallel
     stage: build
-    image_name: atk4/build
-    registry: atk4
-    dockerfile: 7.4/Dockerfile
+    steps:
+      b7.3:
+        type: build
+        stage: build
+        image_name: atk4/image
+        tag: candidate-7.3
+        registry: atk4
+        dockerfile: 7.3/Dockerfile
+
+      b7.4:
+        type: build
+        stage: build
+        image_name: atk4/image
+        tag: candidate-7.4
+        registry: atk4
+        dockerfile: 7.4/Dockerfile
