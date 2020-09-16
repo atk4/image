@@ -16,7 +16,7 @@ steps:
     title: Propagate Dockerfiles
     image: alpine
     commands:
-      - make
+      - apk add make && make
 
   build:
     type: build
