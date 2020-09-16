@@ -25,28 +25,28 @@ steps:
       b7_2:
         type: build
         image_name: atk4/image
-        tag: candidate-7.2
+        tag: "${{CF_BUILD_ID}}-7.2"
         registry: atk4
         dockerfile: 7.2/Dockerfile
 
       b7_3:
         type: build
         image_name: atk4/image
-        tag: candidate-7.3
+        tag: "${{CF_BUILD_ID}}-7.3"
         registry: atk4
         dockerfile: 7.3/Dockerfile
 
       b7_4:
         type: build
         image_name: atk4/image
-        tag: candidate-7.4
+        tag: "${{CF_BUILD_ID}}-7.4"
         registry: atk4
         dockerfile: 7.4/Dockerfile
 
       b8_0:
         type: build
         image_name: atk4/image
-        tag: candidate-8.0
+        tag: "${{CF_BUILD_ID}}-8.0"
         registry: atk4
         dockerfile: 8.0.0beta3/Dockerfile
 
@@ -55,22 +55,22 @@ steps:
     stage: test
     steps:
       t7_2:
-        image: atk4/image:candidate-7.2
+        image: "atk4/image:${{CF_BUILD_ID}}-7.2"
         registry: atk4
         commands:
           - php test.php
       t7_3:
-        image: atk4/image:candidate-7.3
+        image: "atk4/image:${{CF_BUILD_ID}}-7.3"
         registry: atk4
         commands:
           - php test.php
       t7_4:
-        image: atk4/image:candidate-7.4
+        image: "atk4/image:${{CF_BUILD_ID}}-7.4"
         registry: atk4
         commands:
           - php test.php
       t8_0:
-        image: atk4/image:candidate-8.0
+        image: "atk4/image:${{CF_BUILD_ID}}-8.0"
         registry: atk4
         commands:
           - php test.php
@@ -78,6 +78,10 @@ steps:
   push:
     type: parallel
     stage: push
+    when:
+      branch:
+        only:
+          - master
     steps:
       p7_2:
         candidate: "${{b7_2}}"
