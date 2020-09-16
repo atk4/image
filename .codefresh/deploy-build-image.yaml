@@ -11,7 +11,7 @@ steps:
     repo: atk4/image
     revision: "${{CF_BRANCH}}"
 
-  fix_sha:
+  create_dockerfiles:
     stage: prepare
     title: Propagate Dockerfiles
     image: alpine
