@@ -25,7 +25,7 @@ steps:
       b7.3:
         type: build
         stage: build
-        image_name: atk4/image
+        image_name: atk4/build
         tag: candidate-7.3
         registry: atk4
         dockerfile: 7.3/Dockerfile
@@ -33,7 +33,7 @@ steps:
       b7.4:
         type: build
         stage: build
-        image_name: atk4/image
+        image_name: atk4/build
         tag: candidate-7.4
         registry: atk4
         dockerfile: 7.4/Dockerfile
