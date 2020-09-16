@@ -25,14 +25,14 @@ steps:
       b7_2:
         type: build
         image_name: atk4/image
-        tag: "${{CF_BRANCH}}-7.2"
+        tag: "${{CF_BRANCH_TAG_NORMALIZED}}-7.2"
         registry: atk4
         dockerfile: 7.2/Dockerfile
 
       b7_3:
         type: build
         image_name: atk4/image
-        tag: "${{CF_BRANCH}}-7.3"
+        tag: "${{CF_BRANCH_TAG_NORMALIZED}}-7.3"
         registry: atk4
         dockerfile: 7.3/Dockerfile
 
@@ -43,14 +43,14 @@ steps:
       b7_4:
         type: build
         image_name: atk4/image
-        tag: "${{CF_BRANCH}}-7.4"
+        tag: "${{CF_BRANCH_TAG_NORMALIZED}}-7.4"
         registry: atk4
         dockerfile: 7.4/Dockerfile
 
       b8_0:
         type: build
         image_name: atk4/image
-        tag: "${{CF_BRANCH}}-8.0"
+        tag: "${{CF_BRANCH_TAG_NORMALIZED}}-8.0"
         registry: atk4
         dockerfile: 8.0.0beta3/Dockerfile
 
