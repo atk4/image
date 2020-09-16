@@ -2,8 +2,8 @@ version: "1.0"
 stages:
   - prepare
   - build
-  - push
-  - deploy
+  - test
+  - tag
 steps:
   main_clone:
     stage: prepare
@@ -24,7 +24,6 @@ steps:
     steps:
       b7_2:
         type: build
-        stage: build
         image_name: atk4/image
         tag: candidate-7.2
         registry: atk4
@@ -32,7 +31,6 @@ steps:
 
       b7_3:
         type: build
-        stage: build
         image_name: atk4/image
         tag: candidate-7.3
         registry: atk4
@@ -40,7 +38,6 @@ steps:
 
       b7_4:
         type: build
-        stage: build
         image_name: atk4/image
         tag: candidate-7.4
         registry: atk4
@@ -48,8 +45,23 @@ steps:
 
       b8_0:
         type: build
-        stage: build
         image_name: atk4/image
         tag: candidate-8.0
         registry: atk4
         dockerfile: 8.0.0beta3/Dockerfile
+
+  test:
+    type: parallel
+    stage: test
+    steps:
+      b7_2:
+        image: atk4/image:candidate-7.2
+        registry: atk4
+        commands:
+          - php test.php
+      b8_0:
+        image: atk4/image:candidate-8.0
+        registry: atk4
+        commands:
+          - php test.php
+
