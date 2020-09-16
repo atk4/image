@@ -21,6 +21,6 @@ steps:
   build:
     type: build
     stage: build
-    image_name: atk4/build:7.4
+    image_name: atk4/build
     registry: atk4
     dockerfile: 7.4/Dockerfile
