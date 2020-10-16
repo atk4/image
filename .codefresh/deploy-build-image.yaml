@@ -48,7 +48,7 @@ steps:
         image_name: atk4/image
         tag: "${{CF_BUILD_ID}}-8.0"
         registry: atk4
-        dockerfile: 8.0.0beta3/Dockerfile
+        dockerfile: 8.0/Dockerfile
 
   test:
     type: parallel
