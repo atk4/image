@@ -1,4 +1,4 @@
-FROM php:8.0.0rc2-alpine
+FROM php:8.0-rc-alpine
 
 
 # install basic PHP
