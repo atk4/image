@@ -4,7 +4,7 @@
 
 This repository builds and publishes the following images:
 
- - atk4/image - build image used in our workflows. Will have tags 7.2, 7.3, 8.0 etc
+ - atk4/image - build image used in our workflows. Will have tags 7.2, 7.3, 8.0, latest, nighty etc.
 
 ## Running Locally
 

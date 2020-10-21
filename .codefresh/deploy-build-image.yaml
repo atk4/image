@@ -50,6 +50,13 @@ steps:
         registry: atk4
         dockerfile: 8.0/Dockerfile
 
+      bnighty:
+        type: build
+        image_name: atk4/image
+        tag: "${{CF_BUILD_ID}}-nighty"
+        registry: atk4
+        dockerfile: nighty/Dockerfile
+
   test:
     type: parallel
     stage: test
@@ -71,6 +78,11 @@ steps:
           - php test.php
       t8_0:
         image: "atk4/image:${{CF_BUILD_ID}}-8.0"
+        registry: atk4
+        commands:
+          - php test.php
+      tnighty:
+        image: "atk4/image:${{CF_BUILD_ID}}-nighty"
         registry: atk4
         commands:
           - php test.php
@@ -103,6 +115,11 @@ steps:
         type: push
         registry: atk4
         tag: "8.0"
+      pnighty:
+        candidate: "${{bnighty}}"
+        type: push
+        registry: atk4
+        tag: "nighty"
       platest:
         candidate: "${{b7_4}}"
         type: push

@@ -13,6 +13,7 @@ build: clean all
 	(cd 7.3; docker build . -t atk4/image:7.3)
 	(cd 7.4; docker build . -t atk4/image:7.4)
 	(cd 8.0; docker build . -t atk4/image:8.0)
+	(cd nighty; docker build . -t atk4/image:nighty)
 
 test:
 	# You can use this command to manually run test on 8.0, or modify it for any other image
