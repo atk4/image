@@ -103,3 +103,8 @@ steps:
         type: push
         registry: atk4
         tag: "8.0"
+      platest:
+        candidate: "${{b7_4}}"
+        type: push
+        registry: atk4
+        tag: "latest"
