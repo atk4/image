@@ -102,7 +102,7 @@ steps:
         candidate: "${{b8_0}}"
         type: push
         registry: atk4
-        tag: "8.0""
+        tag: "8.0"
       platest:
         candidate: "${{b7_4}}"
         type: push
