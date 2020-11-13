@@ -8,21 +8,16 @@ RUN apk add bash git jq $PHPIZE_DEPS \
         mysql-client postgresql-client postgresql-dev \
         npm && \
     docker-php-ext-install bcmath gmp intl exif gd tidy xsl zip pdo_mysql pdo_pgsql && \
-    curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    wget -q https://getcomposer.org/installer -O - | php -- --install-dir=/usr/local/bin --filename=composer && \
+    wget -q https://github.com/FriendsOfPHP/pickle/releases/latest/download/pickle.phar -O /usr/local/bin/pickle && chmod +x /usr/local/bin/pickle
 
-# install imagick PHP extension
-RUN pecl install imagick && \
-    docker-php-ext-enable imagick
-
-# install igbinary PHP extension
-RUN pecl install igbinary && \
-    docker-php-ext-enable igbinary
-
-# install redis PHP extension
-RUN pecl install redis && \
-    docker-php-ext-enable redis
+# install basic PECL extensions
+RUN pickle install imagick && docker-php-ext-enable imagick
+RUN pickle install igbinary && docker-php-ext-enable igbinary
+RUN pickle install redis --no-interaction && docker-php-ext-enable redis
 
 # install xdebug PHP extension
+# TODO - install using pickle once xdebug 3.0 stable is released, see https://github.com/xdebug/xdebug/releases
 RUN git clone https://github.com/xdebug/xdebug \
     && cd xdebug \
     # the last working commit, because the php-src is not up to date yet in this alpine
@@ -32,6 +27,7 @@ RUN git clone https://github.com/xdebug/xdebug \
     && make install \
     && echo "zend_extension=xdebug.so" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
+
 # install Microsoft ODBC drivers
 # based on https://github.com/microsoft/msphpsql/issues/300#issuecomment-673143369
 RUN curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac7-8d28ddafb39b/msodbcsql17_17.6.1.1-1_amd64.apk -sS && \
@@ -40,11 +36,10 @@ RUN curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac
     printf '\n' | apk add --allow-untrusted mssql-tools_17.6.1.1-1_amd64.apk && \
     ln -sfnv /opt/mssql-tools/bin/* /usr/bin
 
-# pdo_sqlsrv for PHP 8.0 is not available yet
 # install pdo_sqlsrv PHP extension
+# TODO install pdo_sqlsrv once available for PHP8, see https://github.com/atk4/image/issues/8
 #RUN apk add libstdc++ unixodbc unixodbc-dev && \
-#    pecl install pdo_sqlsrv && \
-#    docker-php-ext-enable pdo_sqlsrv
+#    pickle install pdo_sqlsrv && docker-php-ext-enable pdo_sqlsrv
 
 
 # install Oracle Instant client

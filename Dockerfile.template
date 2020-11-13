@@ -9,23 +9,17 @@ RUN apk add bash git jq $PHPIZE_DEPS \
         mysql-client postgresql-client postgresql-dev \
         npm && \
     docker-php-ext-install bcmath gmp intl exif gd tidy xsl zip pdo_mysql pdo_pgsql && \
-    curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    wget -q https://getcomposer.org/installer -O - | php -- --install-dir=/usr/local/bin --filename=composer && \
+    wget -q https://github.com/FriendsOfPHP/pickle/releases/latest/download/pickle.phar -O /usr/local/bin/pickle && chmod +x /usr/local/bin/pickle
 
-# install imagick PHP extension
-RUN pecl install imagick && \
-    docker-php-ext-enable imagick
-
-# install igbinary PHP extension
-RUN pecl install igbinary && \
-    docker-php-ext-enable igbinary
-
-# install redis PHP extension
-RUN pecl install redis && \
-    docker-php-ext-enable redis
+# install basic PECL extensions
+RUN pickle install imagick && docker-php-ext-enable imagick
+RUN pickle install igbinary && docker-php-ext-enable igbinary
+RUN pickle install redis --no-interaction && docker-php-ext-enable redis
 
 # install xdebug PHP extension
-RUN pecl install xdebug && \
-    docker-php-ext-enable xdebug
+# TODO - install using pickle once https://bugs.xdebug.org/view.php?id=1886 is resolved
+RUN pecl install xdebug && docker-php-ext-enable xdebug
 
 
 # install Microsoft ODBC drivers
@@ -37,9 +31,9 @@ RUN curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac
     ln -sfnv /opt/mssql-tools/bin/* /usr/bin
 
 # install pdo_sqlsrv PHP extension
+# TODO install using pickle once https://github.com/microsoft/msphpsql/issues/1210 is resolved
 RUN apk add libstdc++ unixodbc unixodbc-dev && \
-    pecl install pdo_sqlsrv && \
-    docker-php-ext-enable pdo_sqlsrv
+    pecl install pdo_sqlsrv && docker-php-ext-enable pdo_sqlsrv
 
 
 # install Oracle Instant client
