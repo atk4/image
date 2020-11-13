@@ -2,9 +2,25 @@ FROM php:8.0-rc-alpine
 
 
 # install basic PHP
-RUN apk add gmp-dev icu-dev mysql-client postgresql-client postgresql-dev bash npm git jq neovim $PHPIZE_DEPS && \
-    docker-php-ext-install bcmath gmp intl pdo_mysql pdo_pgsql && \
+RUN apk add bash git jq neovim $PHPIZE_DEPS \
+        gmp gmp-dev icu-libs icu-dev libpng libpng-dev imagemagick imagemagick-dev \
+        tidyhtml-libs tidyhtml-dev libxslt libxslt-dev libzip libzip-dev \
+        mysql-client postgresql-client postgresql-dev \
+        npm && \
+    docker-php-ext-install bcmath gmp intl exif gd tidy xsl zip pdo_mysql pdo_pgsql && \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# install imagick PHP extension
+RUN pecl install imagick && \
+    docker-php-ext-enable imagick
+
+# install igbinary PHP extension
+RUN pecl install igbinary && \
+    docker-php-ext-enable igbinary
+
+# install redis PHP extension
+RUN pecl install redis && \
+    docker-php-ext-enable redis
 
 # install xdebug PHP extension
 RUN git clone https://github.com/xdebug/xdebug \
@@ -52,7 +68,8 @@ RUN apk add libaio libnsl libc6-compat && \
 
 
 # remove build deps
-RUN apk del --purge $PHPIZE_DEPS postgresql-dev unixodbc-dev
+RUN apk del --purge $PHPIZE_DEPS gmp-dev icu-dev libpng-dev imagemagick-dev \
+        tidyhtml-dev libxslt-dev libzip-dev postgresql-dev unixodbc-dev
 
 
 # other
