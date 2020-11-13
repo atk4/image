@@ -2,8 +2,8 @@ FROM php:8.0-rc-alpine
 
 
 # install basic PHP
-RUN apk add icu-dev mysql-client postgresql-client postgresql-dev bash npm git jq neovim $PHPIZE_DEPS && \
-    docker-php-ext-install bcmath intl pdo_mysql pdo_pgsql && \
+RUN apk add gmp-dev icu-dev mysql-client postgresql-client postgresql-dev bash npm git jq neovim $PHPIZE_DEPS && \
+    docker-php-ext-install bcmath gmp intl pdo_mysql pdo_pgsql && \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # install xdebug PHP extension
