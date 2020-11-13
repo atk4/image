@@ -17,7 +17,6 @@ $missingExts = array_diff([
     'PDO_OCI',
     'pdo_pgsql',
     'pdo_sqlite',
-    ...(PHP_MAJOR_VERSION === 8 ? [] : ['pdo_sqlsrv']), // not available for PHP 8.0 yet
     'redis',
     'sockets',
     'sqlite3',
@@ -27,6 +26,11 @@ $missingExts = array_diff([
     'xsl',
     'zip',
 ], get_loaded_extensions());
+
+// TODO remove once pdo_sqlsrv is avaiable for PHP 8.0
+if (PHP_MAJOR_VERSION === 8) {
+    unset($missingExts[array_search('pdo_sqlsrv', $missingExts)]);
+}
 
 if (count($missingExts) > 0) {
     echo 'ERROR - missing php extensions: ' . implode(', ', $missingExts) . "\n";
