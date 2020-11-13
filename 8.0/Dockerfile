@@ -2,7 +2,7 @@ FROM php:8.0-rc-alpine
 
 
 # install basic PHP
-RUN apk add bash git jq neovim $PHPIZE_DEPS \
+RUN apk add bash git jq $PHPIZE_DEPS \
         gmp gmp-dev icu-libs icu-dev libpng libpng-dev imagemagick imagemagick-dev \
         tidyhtml-libs tidyhtml-dev libxslt libxslt-dev libzip libzip-dev \
         mysql-client postgresql-client postgresql-dev \
