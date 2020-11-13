@@ -12,6 +12,7 @@ $missingExts = array_diff([
     'intl',
     'mbstring',
     'mysqlnd',
+    'opcache',
     'openssl',
     'pdo_mysql',
     'PDO_OCI',

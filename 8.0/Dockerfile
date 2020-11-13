@@ -7,7 +7,7 @@ RUN apk add bash git jq $PHPIZE_DEPS \
         tidyhtml-libs tidyhtml-dev libxslt libxslt-dev libzip libzip-dev \
         mysql-client postgresql-client postgresql-dev c-client imap-dev \
         npm && \
-    docker-php-ext-install bcmath gmp intl exif gd sockets tidy xsl zip pdo_mysql pdo_pgsql imap && \
+    docker-php-ext-install bcmath gmp intl exif gd sockets tidy xsl zip pdo_mysql pdo_pgsql imap opcache && \
     wget -q https://getcomposer.org/installer -O - | php -- --install-dir=/usr/local/bin --filename=composer && \
     wget -q https://github.com/FriendsOfPHP/pickle/releases/latest/download/pickle.phar -O /usr/local/bin/pickle && chmod +x /usr/local/bin/pickle
 
