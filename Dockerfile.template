@@ -4,10 +4,11 @@ FROM php:7.4-alpine
 
 # install basic PHP
 RUN apk add bash git jq neovim $PHPIZE_DEPS \
-        gmp gmp-dev icu-libs icu-dev libpng libpng-dev imagemagick imagemagick-dev tidyhtml-libs tidyhtml-dev libxslt libxslt-dev \
+        gmp gmp-dev icu-libs icu-dev libpng libpng-dev imagemagick imagemagick-dev \
+        tidyhtml-libs tidyhtml-dev libxslt libxslt-dev libzip libzip-dev \
         mysql-client postgresql-client postgresql-dev \
         npm && \
-    docker-php-ext-install bcmath gmp intl exif gd tidy xsl pdo_mysql pdo_pgsql && \
+    docker-php-ext-install bcmath gmp intl exif gd tidy xsl zip pdo_mysql pdo_pgsql && \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # install imagick PHP extension
@@ -62,7 +63,8 @@ RUN apk add libaio libnsl libc6-compat && \
 
 
 # remove build deps
-RUN apk del --purge $PHPIZE_DEPS gmp-dev icu-dev libpng-dev imagemagick-dev tidyhtml-dev libxslt-dev postgresql-dev unixodbc-dev
+RUN apk del --purge $PHPIZE_DEPS gmp-dev icu-dev libpng-dev imagemagick-dev \
+        tidyhtml-dev libxslt-dev libzip-dev postgresql-dev unixodbc-dev
 
 
 # other
