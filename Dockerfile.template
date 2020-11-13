@@ -3,13 +3,23 @@ FROM php:7.4-alpine
 
 
 # install basic PHP
-RUN apk add icu-dev mysql-client postgresql-client postgresql-dev bash npm git jq neovim $PHPIZE_DEPS && \
-    docker-php-ext-install intl pdo_mysql pdo_pgsql && \
-    curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN apk add bash git jq $PHPIZE_DEPS \
+        gmp gmp-dev icu-libs icu-dev libpng libpng-dev imagemagick imagemagick-dev \
+        tidyhtml-libs tidyhtml-dev libxslt libxslt-dev libzip libzip-dev \
+        mysql-client postgresql-client postgresql-dev c-client imap-dev \
+        npm && \
+    docker-php-ext-install bcmath gmp intl exif gd sockets tidy xsl zip pdo_mysql pdo_pgsql imap opcache && \
+    wget -q https://getcomposer.org/installer -O - | php -- --install-dir=/usr/local/bin --filename=composer && \
+    wget -q https://github.com/FriendsOfPHP/pickle/releases/latest/download/pickle.phar -O /usr/local/bin/pickle && chmod +x /usr/local/bin/pickle
+
+# install basic PECL extensions
+RUN pickle install imagick && docker-php-ext-enable imagick
+RUN pickle install igbinary && docker-php-ext-enable igbinary
+RUN pickle install redis --no-interaction && docker-php-ext-enable redis
 
 # install xdebug PHP extension
-RUN pecl install xdebug && \
-    docker-php-ext-enable xdebug
+# TODO - install using pickle once https://bugs.xdebug.org/view.php?id=1886 is resolved
+RUN pecl install xdebug && docker-php-ext-enable xdebug
 
 
 # install Microsoft ODBC drivers
@@ -21,9 +31,9 @@ RUN curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac
     ln -sfnv /opt/mssql-tools/bin/* /usr/bin
 
 # install pdo_sqlsrv PHP extension
+# TODO install using pickle once https://github.com/microsoft/msphpsql/issues/1210 is resolved
 RUN apk add libstdc++ unixodbc unixodbc-dev && \
-    pecl install pdo_sqlsrv && \
-    docker-php-ext-enable pdo_sqlsrv
+    pecl install pdo_sqlsrv && docker-php-ext-enable pdo_sqlsrv
 
 
 # install Oracle Instant client
@@ -47,8 +57,15 @@ RUN apk add libaio libnsl libc6-compat && \
 
 
 # remove build deps
-RUN apk del --purge $PHPIZE_DEPS postgresql-dev unixodbc-dev
+RUN apk del --purge $PHPIZE_DEPS gmp-dev icu-dev libpng-dev imagemagick-dev \
+        tidyhtml-dev libxslt-dev libzip-dev postgresql-dev imap-dev unixodbc-dev
 
 
 # other
 RUN npm install -g less clean-css uglify-js
+
+
+# run basic tests
+COPY test.php ./
+RUN php test.php && rm test.php
+RUN composer diagnose

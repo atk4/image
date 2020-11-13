@@ -2,19 +2,29 @@ FROM php:8.0-rc-alpine
 
 
 # install basic PHP
-RUN apk add icu-dev mysql-client postgresql-client postgresql-dev bash npm git jq neovim $PHPIZE_DEPS && \
-    docker-php-ext-install intl pdo_mysql pdo_pgsql && \
-    curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN apk add bash git jq $PHPIZE_DEPS \
+        gmp gmp-dev icu-libs icu-dev libpng libpng-dev imagemagick imagemagick-dev \
+        tidyhtml-libs tidyhtml-dev libxslt libxslt-dev libzip libzip-dev \
+        mysql-client postgresql-client postgresql-dev c-client imap-dev \
+        npm && \
+    docker-php-ext-install bcmath gmp intl exif gd sockets tidy xsl zip pdo_mysql pdo_pgsql imap opcache && \
+    wget -q https://getcomposer.org/installer -O - | php -- --install-dir=/usr/local/bin --filename=composer && \
+    wget -q https://github.com/FriendsOfPHP/pickle/releases/latest/download/pickle.phar -O /usr/local/bin/pickle && chmod +x /usr/local/bin/pickle
+
+# install basic PECL extensions
+# TODO - install using pickle once imagick 3.4.5 is released, see https://github.com/Imagick/imagick/releases
+RUN git clone https://github.com/Imagick/imagick && cd imagick \
+    && phpize && ./configure && make all && make install \
+    && echo "extension=imagick.so" >> /usr/local/etc/php/conf.d/docker-php-ext-imagick.ini
+RUN pickle install igbinary && docker-php-ext-enable igbinary
+RUN pickle install redis --no-interaction && docker-php-ext-enable redis
 
 # install xdebug PHP extension
-RUN git clone https://github.com/xdebug/xdebug \
-    && cd xdebug \
-    # the last working commit, because the php-src is not up to date yet in this alpine
-    && phpize \
-    && ./configure --enable-xdebug-dev \
-    && make all \
-    && make install \
+# TODO - install using pickle once xdebug 3.0 stable is released, see https://github.com/xdebug/xdebug/releases
+RUN git clone https://github.com/xdebug/xdebug && cd xdebug \
+    && phpize && ./configure --enable-xdebug-dev && make all && make install \
     && echo "zend_extension=xdebug.so" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
 
 # install Microsoft ODBC drivers
 # based on https://github.com/microsoft/msphpsql/issues/300#issuecomment-673143369
@@ -24,11 +34,10 @@ RUN curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac
     printf '\n' | apk add --allow-untrusted mssql-tools_17.6.1.1-1_amd64.apk && \
     ln -sfnv /opt/mssql-tools/bin/* /usr/bin
 
-# pdo_sqlsrv for PHP 8.0 is not available yet
 # install pdo_sqlsrv PHP extension
+# TODO install pdo_sqlsrv once available for PHP8, see https://github.com/atk4/image/issues/8
 #RUN apk add libstdc++ unixodbc unixodbc-dev && \
-#    pecl install pdo_sqlsrv && \
-#    docker-php-ext-enable pdo_sqlsrv
+#    pickle install pdo_sqlsrv && docker-php-ext-enable pdo_sqlsrv
 
 
 # install Oracle Instant client
@@ -52,8 +61,15 @@ RUN apk add libaio libnsl libc6-compat && \
 
 
 # remove build deps
-RUN apk del --purge $PHPIZE_DEPS postgresql-dev unixodbc-dev
+RUN apk del --purge $PHPIZE_DEPS gmp-dev icu-dev libpng-dev imagemagick-dev \
+        tidyhtml-dev libxslt-dev libzip-dev postgresql-dev imap-dev unixodbc-dev
 
 
 # other
 RUN npm install -g less clean-css uglify-js
+
+
+# run basic tests
+COPY test.php ./
+RUN php test.php && rm test.php
+RUN composer diagnose
