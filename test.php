@@ -12,7 +12,6 @@ $missingExts = array_diff([
     'intl',
     'mbstring',
     'mysqlnd',
-    'opcache',
     'openssl',
     'pdo_mysql',
     'PDO_OCI',
@@ -25,6 +24,7 @@ $missingExts = array_diff([
     'xdebug',
     'xml',
     'xsl',
+    'Zend OPcache',
     'zip',
 ], get_loaded_extensions());
 
