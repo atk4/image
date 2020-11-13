@@ -3,7 +3,9 @@ FROM php:7.4-alpine
 
 
 # install basic PHP
-RUN apk add gmp-dev icu-dev mysql-client postgresql-client postgresql-dev bash npm git jq neovim $PHPIZE_DEPS && \
+RUN apk add bash git jq neovim $PHPIZE_DEPS \
+        gmp-dev icu-dev mysql-client postgresql-client postgresql-dev \
+        npm && \
     docker-php-ext-install bcmath gmp intl pdo_mysql pdo_pgsql && \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
