@@ -74,3 +74,9 @@ RUN apk del --purge $PHPIZE_DEPS gmp-dev icu-dev libpng-dev imagemagick-dev \
 
 # other
 RUN npm install -g less clean-css uglify-js
+
+
+# run basic tests
+COPY test.php ./
+RUN php test.php && rm test.php
+RUN composer diagnose
