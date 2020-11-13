@@ -12,19 +12,17 @@ RUN apk add bash git jq $PHPIZE_DEPS \
     wget -q https://github.com/FriendsOfPHP/pickle/releases/latest/download/pickle.phar -O /usr/local/bin/pickle && chmod +x /usr/local/bin/pickle
 
 # install basic PECL extensions
-RUN pickle install imagick && docker-php-ext-enable imagick
+# TODO - install using pickle once imagick 3.4.5 is released, see https://github.com/Imagick/imagick/releases
+RUN git clone https://github.com/Imagick/imagick && cd imagick \
+    && phpize && ./configure && make all && make install \
+    && echo "extension=imagick.so" >> /usr/local/etc/php/conf.d/docker-php-ext-imagick.ini
 RUN pickle install igbinary && docker-php-ext-enable igbinary
 RUN pickle install redis --no-interaction && docker-php-ext-enable redis
 
 # install xdebug PHP extension
 # TODO - install using pickle once xdebug 3.0 stable is released, see https://github.com/xdebug/xdebug/releases
-RUN git clone https://github.com/xdebug/xdebug \
-    && cd xdebug \
-    # the last working commit, because the php-src is not up to date yet in this alpine
-    && phpize \
-    && ./configure --enable-xdebug-dev \
-    && make all \
-    && make install \
+RUN git clone https://github.com/xdebug/xdebug && cd xdebug \
+    && phpize && ./configure --enable-xdebug-dev && make all && make install \
     && echo "zend_extension=xdebug.so" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
 
