@@ -17,6 +17,7 @@ $missingExts = array_diff([
     'PDO_OCI',
     'pdo_pgsql',
     'pdo_sqlite',
+    'pcntl',
     'redis',
     'sockets',
     'sqlite3',
