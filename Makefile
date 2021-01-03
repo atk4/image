@@ -2,7 +2,7 @@ SUBDIRS = $(wildcard [0-9].*)
 .PHONY: $(SUBDIRS)
 all: $(SUBDIRS)
 $(SUBDIRS):
-	@[ -f $@/Dockerfile ] || cat Dockerfile.template  | sed 's/^FROM.*/FROM php:$@-alpine/' > $@/Dockerfile | echo "Created $@/Dockerfile from Dockerfile.template"
+	@[ -f $@/Dockerfile ] || cat Dockerfile.template  | sed 's/^FROM.*/FROM php:$@-fpm-alpine/' > $@/Dockerfile | echo "Created $@/Dockerfile from Dockerfile.template"
 
 clean:
 	rm ?.?/Dockerfile

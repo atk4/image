@@ -1,4 +1,4 @@
-FROM php:7.4-alpine
+FROM php:7.4-fpm-alpine
 # ^^ "make" will override version
 
 
@@ -44,6 +44,10 @@ RUN install-php-extensions pdo_oci
 # remove build deps
 RUN apk del --purge $PHPIZE_DEPS gmp-dev icu-dev libpng-dev imagemagick-dev \
         tidyhtml-dev libxslt-dev libzip-dev postgresql-dev imap-dev unixodbc-dev
+
+
+# for Behat testing
+RUN apk add redis nginx
 
 
 # other

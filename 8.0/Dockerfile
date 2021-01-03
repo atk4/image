@@ -1,4 +1,4 @@
-FROM php:8.0-alpine
+FROM php:8.0-fpm-alpine
 
 
 # install basic PHP
@@ -48,6 +48,10 @@ RUN install-php-extensions pdo_oci
 # remove build deps
 RUN apk del --purge $PHPIZE_DEPS gmp-dev icu-dev libpng-dev imagemagick-dev \
         tidyhtml-dev libxslt-dev libzip-dev postgresql-dev imap-dev #unixodbc-dev
+
+
+# for Behat testing
+RUN apk add redis nginx
 
 
 # other
