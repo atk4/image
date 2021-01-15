@@ -1,7 +1,7 @@
 <?php
 
 $imageNames = [];
-foreach ([''/*, '-browser'*/] as $imageType) {
+foreach (['', '-browser'] as $imageType) {
     foreach (['7.2', '7.3', '7.4', '8.0'] as $phpVersion) {
         $dockerFile = 'FROM php:' . $phpVersion . '-alpine
 

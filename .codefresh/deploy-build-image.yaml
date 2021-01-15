@@ -39,6 +39,30 @@ steps:
         tag: "${{CF_BUILD_ID}}-8.0"
         registry: atk4
         dockerfile: data/8.0/Dockerfile
+      b7.2-browser:
+        type: build
+        image_name: atk4/image
+        tag: "${{CF_BUILD_ID}}-7.2-browser"
+        registry: atk4
+        dockerfile: data/7.2-browser/Dockerfile
+      b7.3-browser:
+        type: build
+        image_name: atk4/image
+        tag: "${{CF_BUILD_ID}}-7.3-browser"
+        registry: atk4
+        dockerfile: data/7.3-browser/Dockerfile
+      b7.4-browser:
+        type: build
+        image_name: atk4/image
+        tag: "${{CF_BUILD_ID}}-7.4-browser"
+        registry: atk4
+        dockerfile: data/7.4-browser/Dockerfile
+      b8.0-browser:
+        type: build
+        image_name: atk4/image
+        tag: "${{CF_BUILD_ID}}-8.0-browser"
+        registry: atk4
+        dockerfile: data/8.0-browser/Dockerfile
 
   test:
     type: parallel
@@ -61,6 +85,26 @@ steps:
           - php test.php
       t8.0:
         image: "atk4/image:${{CF_BUILD_ID}}-8.0"
+        registry: atk4
+        commands:
+          - php test.php
+      t7.2-browser:
+        image: "atk4/image:${{CF_BUILD_ID}}-7.2-browser"
+        registry: atk4
+        commands:
+          - php test.php
+      t7.3-browser:
+        image: "atk4/image:${{CF_BUILD_ID}}-7.3-browser"
+        registry: atk4
+        commands:
+          - php test.php
+      t7.4-browser:
+        image: "atk4/image:${{CF_BUILD_ID}}-7.4-browser"
+        registry: atk4
+        commands:
+          - php test.php
+      t8.0-browser:
+        image: "atk4/image:${{CF_BUILD_ID}}-8.0-browser"
         registry: atk4
         commands:
           - php test.php
@@ -98,3 +142,28 @@ steps:
         type: push
         registry: atk4
         tag: "8.0"
+      p7.2-browser:
+        candidate: "${{b7.2-browser}}"
+        type: push
+        registry: atk4
+        tag: "7.2-browser"
+      p7.3-browser:
+        candidate: "${{b7.3-browser}}"
+        type: push
+        registry: atk4
+        tag: "7.3-browser"
+      p7.4-browser:
+        candidate: "${{b7.4-browser}}"
+        type: push
+        registry: atk4
+        tag: "7.4-browser"
+      platest-browser:
+        candidate: "${{b7.4-browser}}"
+        type: push
+        registry: atk4
+        tag: "latest-browser"
+      p8.0-browser:
+        candidate: "${{b8.0-browser}}"
+        type: push
+        registry: atk4
+        tag: "8.0-browser"
