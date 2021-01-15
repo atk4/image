@@ -2,9 +2,8 @@ version: "1.0"
 stages:
   - prepare
   - build
-  - build-selenium
+  - build_selenium
   - test
-  - test-selenium
   - push
 steps:
   main_clone:
@@ -48,7 +47,7 @@ steps:
 
   build_selenium:
     type: parallel
-    stage: build-selenium
+    stage: build_selenium
     steps:
       b7_dot_2_dash_selenium:
         type: build
@@ -103,11 +102,6 @@ steps:
         registry: atk4
         commands:
           - php test.php
-
-  test_selenium:
-    type: parallel
-    stage: test-selenium
-    steps:
       t7_dot_2_dash_selenium:
         image: "atk4/image:${{CF_BUILD_ID}}-7.2-selenium"
         registry: atk4

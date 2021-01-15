@@ -122,13 +122,17 @@ RUN apk add firefox && \
     }
 }
 
+$imageNamesExtended = array_merge(
+    $imageNames,
+    array_map(function($imageName) { return $imageName. '-selenium'; }, $imageNames)
+);
+
 $codefreshFile = 'version: "1.0"
 stages:
   - prepare
   - build
-  - build-selenium
+  - build_selenium
   - test
-  - test-selenium
   - push
 steps:
   main_clone:
@@ -153,7 +157,7 @@ steps:
 
   build_selenium:
     type: parallel
-    stage: build-selenium
+    stage: build_selenium
     steps:
 ' . implode("\n", array_map(function ($imageName) use ($cfLabelFromName) {
         return '      ' . $cfLabelFromName('b', $imageName.'-selenium') . ':
@@ -175,19 +179,7 @@ steps:
         registry: atk4
         commands:
           - php test.php';
-}, $imageNames)) . '
-
-  test_selenium:
-    type: parallel
-    stage: test-selenium
-    steps:
-' . implode("\n", array_map(function ($imageName) use ($cfLabelFromName) {
-        return '      ' . $cfLabelFromName('t', $imageName.'-selenium') . ':
-        image: "atk4/image:${{CF_BUILD_ID}}-' . $imageName . '-selenium"
-        registry: atk4
-        commands:
-          - php test.php';
-    }, $imageNames)) . '
+}, $imageNamesExtended)) . '
 
   push:
     type: parallel
@@ -214,10 +206,7 @@ steps:
     }
 
     return implode("\n", $res);
-}, array_merge(
-    $imageNames,
-    array_map(function($imageName) { return $imageName. '-selenium'; }, $imageNames)
-))).'
+}, $imageNamesExtended)).'
 ';
 file_put_contents(__DIR__ . '/.codefresh/deploy-build-image.yaml', $codefreshFile);
 
