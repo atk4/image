@@ -221,3 +221,32 @@ steps:
 ))).'
 ';
 file_put_contents(__DIR__ . '/.codefresh/deploy-build-image.yaml', $codefreshFile);
+
+
+$codefreshFile = 'name: Build
+
+on:
+  pull_request:
+  push:
+  schedule:
+    - cron: \'0 0 * * *\'
+
+jobs:
+  unit:
+    name: Build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        imageName:
+'. implode("\n", array_map(function ($imageName) {
+    return '          - "' . $imageName . '"';
+}, $imageNames)) . '
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Build Dockerfile
+        run: cd data/${{ matrix.imageName }} && docker build ./
+';
+file_put_contents(__DIR__ . '/.github/workflows/test-build.yml', $codefreshFile);
