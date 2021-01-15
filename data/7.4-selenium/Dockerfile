@@ -60,7 +60,7 @@ RUN apk add openjdk8-jre-base xvfb ttf-freefont && \
 RUN apk add chromium chromium-chromedriver
 
 # install Firefox
-RUN apk firefox && \
+RUN apk add firefox && \
     curl --fail --silent --show-error -L "https://github.com/mozilla/geckodriver/releases/download/v0.28.0/geckodriver-v0.28.0-linux64.tar.gz" -o /tmp/geckodriver.tar.gz && \
     tar -C /opt -zxf /tmp/geckodriver.tar.gz && rm /tmp/geckodriver.tar.gz && \
     chmod 755 /opt/geckodriver && ln -s /opt/geckodriver /usr/bin/geckodriver
