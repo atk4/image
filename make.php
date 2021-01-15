@@ -2,13 +2,12 @@
 
 $cfLabelFromName = function(string $prefix, string $n): string {
     return $prefix . preg_replace_callback('~\W~', function ($matches) {
-        if ($matches[0] === '.') {
-            return '_dot_';
-        } elseif ($matches[0] === '-') {
-            return '_dash_';
-        }
-
-        return '_x' . bin2hex($matches[0]) . '_';
+        return '_'
+            . ([
+                '.' => 'dot',
+                '-' => 'dash',
+            ][$matches[0]] ?? '0x' . bin2hex($matches[0]))
+            . '_';
     }, $n);
 };
 
@@ -217,13 +216,13 @@ steps:
     return implode("\n", $res);
 }, array_merge(
     $imageNames,
-    array_map(function($image_name) { return $image_name.'-selenium'; }, $imageNames)
+    array_map(function($imageName) { return $imageName. '-selenium'; }, $imageNames)
 ))).'
 ';
 file_put_contents(__DIR__ . '/.codefresh/deploy-build-image.yaml', $codefreshFile);
 
 
-$codefreshFile = 'name: Build
+$codefreshFile = 'name: CI
 
 on:
   pull_request:
@@ -233,6 +232,21 @@ on:
 
 jobs:
   unit:
+    name: Templating
+    runs-on: ubuntu-latest
+    container:
+      image: atk4/image
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: "Check if files are in-sync"
+        run: |
+          rm -rf data/
+          php make.php
+          git diff --exit-code
+
+  build:
     name: Build
     runs-on: ubuntu-latest
     strategy:
@@ -249,4 +263,4 @@ jobs:
       - name: Build Dockerfile
         run: docker build -f data/${{ matrix.imageName }}/Dockerfile ./
 ';
-file_put_contents(__DIR__ . '/.github/workflows/test-build.yml', $codefreshFile);
+file_put_contents(__DIR__ . '/.github/workflows/ci.yml', $codefreshFile);
