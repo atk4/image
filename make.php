@@ -247,6 +247,6 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build Dockerfile
-        run: cd data/${{ matrix.imageName }} && docker build ./
+        run: docker build -f data/${{ matrix.imageName }}/Dockerfile ./
 ';
 file_put_contents(__DIR__ . '/.github/workflows/test-build.yml', $codefreshFile);
