@@ -20,27 +20,32 @@ steps:
       b7_dot_2:
         type: build
         image_name: atk4/image
+        target: base
         tag: "${{CF_BUILD_ID}}-7.2"
         registry: atk4
         dockerfile: data/7.2/Dockerfile
       b7_dot_3:
         type: build
         image_name: atk4/image
+        target: base
         tag: "${{CF_BUILD_ID}}-7.3"
         registry: atk4
         dockerfile: data/7.3/Dockerfile
       b7_dot_4:
         type: build
         image_name: atk4/image
+        target: base
         tag: "${{CF_BUILD_ID}}-7.4"
         registry: atk4
         dockerfile: data/7.4/Dockerfile
       b8_dot_0:
         type: build
         image_name: atk4/image
+        target: base
         tag: "${{CF_BUILD_ID}}-8.0"
         registry: atk4
         dockerfile: data/8.0/Dockerfile
+
   build_selenium:
     type: parallel
     stage: build-selenium
@@ -48,27 +53,31 @@ steps:
       b7_dot_2_dash_selenium:
         type: build
         image_name: atk4/image
+        target: selenium
         tag: "${{CF_BUILD_ID}}-7.2-selenium"
         registry: atk4
-        dockerfile: data/7.2-selenium/Dockerfile
+        dockerfile: data/7.2/Dockerfile
       b7_dot_3_dash_selenium:
         type: build
         image_name: atk4/image
+        target: selenium
         tag: "${{CF_BUILD_ID}}-7.3-selenium"
         registry: atk4
-        dockerfile: data/7.3-selenium/Dockerfile
+        dockerfile: data/7.3/Dockerfile
       b7_dot_4_dash_selenium:
         type: build
         image_name: atk4/image
+        target: selenium
         tag: "${{CF_BUILD_ID}}-7.4-selenium"
         registry: atk4
-        dockerfile: data/7.4-selenium/Dockerfile
+        dockerfile: data/7.4/Dockerfile
       b8_dot_0_dash_selenium:
         type: build
         image_name: atk4/image
+        target: selenium
         tag: "${{CF_BUILD_ID}}-8.0-selenium"
         registry: atk4
-        dockerfile: data/8.0-selenium/Dockerfile
+        dockerfile: data/8.0/Dockerfile
 
   test:
     type: parallel
@@ -94,6 +103,7 @@ steps:
         registry: atk4
         commands:
           - php test.php
+
   test_selenium:
     type: parallel
     stage: test-selenium
