@@ -179,7 +179,7 @@ steps:
         type: push
         registry: atk4
         tag: "' . $imageName . '"';
-    $imageNameLatest = preg_replace('~7.4~', 'latest', $imageName);
+    $imageNameLatest = preg_replace('~7\.4~', 'latest', $imageName);
     if ($imageNameLatest !== $imageName) {
     $res[] = '      ' . $cfLabelFromName('p', $imageNameLatest) . ':
         candidate: "${{' . $cfLabelFromName('b', $imageName) . '}}"
