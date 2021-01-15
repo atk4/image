@@ -6,7 +6,7 @@ $missingExts = array_diff([
     'exif',
     'gd',
     'gmp',
-    'igbinary',
+#    'igbinary',
     'imagick',
     'imap',
     'intl',
