@@ -20,25 +20,25 @@ steps:
         image_name: atk4/image
         tag: "${{CF_BUILD_ID}}-7.2"
         registry: atk4
-        dockerfile: 7.2/Dockerfile
+        dockerfile: data/7.2/Dockerfile
       b7.3:
         type: build
         image_name: atk4/image
         tag: "${{CF_BUILD_ID}}-7.3"
         registry: atk4
-        dockerfile: 7.3/Dockerfile
+        dockerfile: data/7.3/Dockerfile
       b7.4:
         type: build
         image_name: atk4/image
         tag: "${{CF_BUILD_ID}}-7.4"
         registry: atk4
-        dockerfile: 7.4/Dockerfile
+        dockerfile: data/7.4/Dockerfile
       b8.0:
         type: build
         image_name: atk4/image
         tag: "${{CF_BUILD_ID}}-8.0"
         registry: atk4
-        dockerfile: 8.0/Dockerfile
+        dockerfile: data/8.0/Dockerfile
 
   test:
     type: parallel

@@ -116,7 +116,7 @@ steps:
         image_name: atk4/image
         tag: "${{CF_BUILD_ID}}-' . $imageName . '"
         registry: atk4
-        dockerfile: ' . $imageName . '/Dockerfile';
+        dockerfile: data/' . $imageName . '/Dockerfile';
 }, $imageNames)) . '
 
   test:
