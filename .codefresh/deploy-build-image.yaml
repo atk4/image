@@ -11,39 +11,29 @@ steps:
     repo: atk4/image
     revision: "${{CF_BRANCH}}"
 
-  create_dockerfiles:
-    stage: prepare
-    title: Propagate Dockerfiles
-    image: alpine
-    commands:
-      - apk add make && make
-
   build:
     type: parallel
     stage: build
     steps:
-      b7_2:
+      b7.2:
         type: build
         image_name: atk4/image
         tag: "${{CF_BUILD_ID}}-7.2"
         registry: atk4
         dockerfile: 7.2/Dockerfile
-
-      b7_3:
+      b7.3:
         type: build
         image_name: atk4/image
         tag: "${{CF_BUILD_ID}}-7.3"
         registry: atk4
         dockerfile: 7.3/Dockerfile
-
-      b7_4:
+      b7.4:
         type: build
         image_name: atk4/image
         tag: "${{CF_BUILD_ID}}-7.4"
         registry: atk4
         dockerfile: 7.4/Dockerfile
-
-      b8_0:
+      b8.0:
         type: build
         image_name: atk4/image
         tag: "${{CF_BUILD_ID}}-8.0"
@@ -54,22 +44,22 @@ steps:
     type: parallel
     stage: test
     steps:
-      t7_2:
+      t7.2:
         image: "atk4/image:${{CF_BUILD_ID}}-7.2"
         registry: atk4
         commands:
           - php test.php
-      t7_3:
+      t7.3:
         image: "atk4/image:${{CF_BUILD_ID}}-7.3"
         registry: atk4
         commands:
           - php test.php
-      t7_4:
+      t7.4:
         image: "atk4/image:${{CF_BUILD_ID}}-7.4"
         registry: atk4
         commands:
           - php test.php
-      t8_0:
+      t8.0:
         image: "atk4/image:${{CF_BUILD_ID}}-8.0"
         registry: atk4
         commands:
@@ -83,28 +73,28 @@ steps:
         only:
           - master
     steps:
-      p7_2:
-        candidate: "${{b7_2}}"
+      p7.2:
+        candidate: "${{b7.2}}"
         type: push
         registry: atk4
         tag: "7.2"
-      p7_3:
-        candidate: "${{b7_3}}"
+      p7.3:
+        candidate: "${{b7.3}}"
         type: push
         registry: atk4
         tag: "7.3"
-      p7_4:
-        candidate: "${{b7_4}}"
+      p7.4:
+        candidate: "${{b7.4}}"
         type: push
         registry: atk4
         tag: "7.4"
-      p8_0:
-        candidate: "${{b8_0}}"
-        type: push
-        registry: atk4
-        tag: "8.0"
       platest:
-        candidate: "${{b7_4}}"
+        candidate: "${{b7.4}}"
         type: push
         registry: atk4
         tag: "latest"
+      p8.0:
+        candidate: "${{b8.0}}"
+        type: push
+        registry: atk4
+        tag: "8.0"

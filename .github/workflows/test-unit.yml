@@ -1,0 +1,22 @@
+name: Unit
+
+on:
+  pull_request:
+  push:
+  schedule:
+    - cron: '0 0/2 * * *'
+
+jobs:
+  unit:
+    name: Unit
+    runs-on: ubuntu-latest
+    container:
+      image: atk4/image
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: "Check if files are in-sync"
+        run: |
+          php make.php
+          git diff --exit-code

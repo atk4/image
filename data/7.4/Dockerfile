@@ -1,5 +1,4 @@
-FROM php:8.0-alpine
-
+FROM php:7.4-alpine
 
 # install basic PHP
 RUN apk add bash git jq $PHPIZE_DEPS \
@@ -13,18 +12,12 @@ RUN wget -q https://github.com/FriendsOfPHP/pickle/releases/latest/download/pick
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
 # install basic PECL extensions
-# TODO - install using pickle once imagick 3.4.5 is released, see https://github.com/Imagick/imagick/releases
-RUN git clone https://github.com/Imagick/imagick && cd imagick \
-    && phpize && ./configure && make all && make install \
-    && echo "extension=imagick.so" >> /usr/local/etc/php/conf.d/docker-php-ext-imagick.ini
+RUN pickle install imagick && docker-php-ext-enable imagick
 RUN pickle install igbinary && docker-php-ext-enable igbinary
 RUN pickle install redis --no-interaction && docker-php-ext-enable redis
 
 # install xdebug PHP extension
-# TODO - install using pickle once xdebug 3.0 stable is released, see https://github.com/xdebug/xdebug/releases
-RUN git clone https://github.com/xdebug/xdebug && cd xdebug \
-    && phpize && ./configure --enable-xdebug-dev && make all && make install \
-    && echo "zend_extension=xdebug.so" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+RUN pecl install xdebug && docker-php-ext-enable xdebug
 
 
 # install Microsoft ODBC drivers
@@ -36,9 +29,8 @@ RUN curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac
     ln -sfnv /opt/mssql-tools/bin/* /usr/bin
 
 # install pdo_sqlsrv PHP extension
-# TODO install pdo_sqlsrv once available for PHP8, see https://github.com/atk4/image/issues/8
-#RUN apk add libstdc++ unixodbc unixodbc-dev && \
-#    pickle install pdo_sqlsrv && docker-php-ext-enable pdo_sqlsrv
+RUN apk add libstdc++ unixodbc unixodbc-dev && \
+    pecl install pdo_sqlsrv && docker-php-ext-enable pdo_sqlsrv
 
 
 # install Oracle Instant client & pdo_oci PHP extension
@@ -47,7 +39,7 @@ RUN install-php-extensions pdo_oci
 
 # remove build deps
 RUN apk del --purge $PHPIZE_DEPS gmp-dev icu-dev libpng-dev imagemagick-dev \
-        tidyhtml-dev libxslt-dev libzip-dev postgresql-dev imap-dev #unixodbc-dev
+        tidyhtml-dev libxslt-dev libzip-dev postgresql-dev imap-dev unixodbc-dev
 
 
 # other
