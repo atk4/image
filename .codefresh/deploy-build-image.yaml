@@ -39,25 +39,25 @@ steps:
         tag: "${{CF_BUILD_ID}}-8.0"
         registry: atk4
         dockerfile: data/8.0/Dockerfile
-      b7_dot_2_slash_selenium:
+      b7_dot_2_dash_selenium:
         type: build
         image_name: atk4/image
         tag: "${{CF_BUILD_ID}}-7.2-selenium"
         registry: atk4
         dockerfile: data/7.2-selenium/Dockerfile
-      b7_dot_3_slash_selenium:
+      b7_dot_3_dash_selenium:
         type: build
         image_name: atk4/image
         tag: "${{CF_BUILD_ID}}-7.3-selenium"
         registry: atk4
         dockerfile: data/7.3-selenium/Dockerfile
-      b7_dot_4_slash_selenium:
+      b7_dot_4_dash_selenium:
         type: build
         image_name: atk4/image
         tag: "${{CF_BUILD_ID}}-7.4-selenium"
         registry: atk4
         dockerfile: data/7.4-selenium/Dockerfile
-      b8_dot_0_slash_selenium:
+      b8_dot_0_dash_selenium:
         type: build
         image_name: atk4/image
         tag: "${{CF_BUILD_ID}}-8.0-selenium"
@@ -88,22 +88,22 @@ steps:
         registry: atk4
         commands:
           - php test.php
-      t7_dot_2_slash_selenium:
+      t7_dot_2_dash_selenium:
         image: "atk4/image:${{CF_BUILD_ID}}-7.2-selenium"
         registry: atk4
         commands:
           - php test.php
-      t7_dot_3_slash_selenium:
+      t7_dot_3_dash_selenium:
         image: "atk4/image:${{CF_BUILD_ID}}-7.3-selenium"
         registry: atk4
         commands:
           - php test.php
-      t7_dot_4_slash_selenium:
+      t7_dot_4_dash_selenium:
         image: "atk4/image:${{CF_BUILD_ID}}-7.4-selenium"
         registry: atk4
         commands:
           - php test.php
-      t8_dot_0_slash_selenium:
+      t8_dot_0_dash_selenium:
         image: "atk4/image:${{CF_BUILD_ID}}-8.0-selenium"
         registry: atk4
         commands:
@@ -142,28 +142,28 @@ steps:
         type: push
         registry: atk4
         tag: "8.0"
-      p7_dot_2_slash_selenium:
-        candidate: "${{b7_dot_2_slash_selenium}}"
+      p7_dot_2_dash_selenium:
+        candidate: "${{b7_dot_2_dash_selenium}}"
         type: push
         registry: atk4
         tag: "7.2-selenium"
-      p7_dot_3_slash_selenium:
-        candidate: "${{b7_dot_3_slash_selenium}}"
+      p7_dot_3_dash_selenium:
+        candidate: "${{b7_dot_3_dash_selenium}}"
         type: push
         registry: atk4
         tag: "7.3-selenium"
-      p7_dot_4_slash_selenium:
-        candidate: "${{b7_dot_4_slash_selenium}}"
+      p7_dot_4_dash_selenium:
+        candidate: "${{b7_dot_4_dash_selenium}}"
         type: push
         registry: atk4
         tag: "7.4-selenium"
-      platest_slash_selenium:
-        candidate: "${{b7_dot_4_slash_selenium}}"
+      platest_dash_selenium:
+        candidate: "${{b7_dot_4_dash_selenium}}"
         type: push
         registry: atk4
         tag: "latest-selenium"
-      p8_dot_0_slash_selenium:
-        candidate: "${{b8_dot_0_slash_selenium}}"
+      p8_dot_0_dash_selenium:
+        candidate: "${{b8_dot_0_dash_selenium}}"
         type: push
         registry: atk4
         tag: "8.0-selenium"

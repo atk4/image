@@ -5,7 +5,7 @@ $cfLabelFromName = function(string $prefix, string $n): string {
         if ($matches[0] === '.') {
             return '_dot_';
         } elseif ($matches[0] === '-') {
-            return '_slash_';
+            return '_dash_';
         }
 
         return '_x' . bin2hex($matches[0]) . '_';
