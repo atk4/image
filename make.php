@@ -13,9 +13,9 @@ $cfLabelFromName = function(string $prefix, string $n): string {
 };
 
 $imageNames = [];
-foreach (['', 'selenium'] as $imageType) {
+foreach ([''] as $imageType) {
     foreach (['7.2', '7.3', '7.4', '8.0'] as $phpVersion) {
-        $dockerFile = 'FROM php:' . $phpVersion . '-alpine
+        $dockerFile = 'FROM php:' . $phpVersion . '-alpine as base
 
 # install basic PHP
 RUN apk add bash git jq $PHPIZE_DEPS \
@@ -37,7 +37,7 @@ $phpVersion < 8
     && phpize && ./configure && make all && make install \
     && echo "extension=imagick.so" >> /usr/local/etc/php/conf.d/docker-php-ext-imagick.ini'
 ) . '
-RUN pickle install igbinary && docker-php-ext-enable igbinary
+#RUN pickle install igbinary && docker-php-ext-enable igbinary
 RUN pickle install redis --no-interaction && docker-php-ext-enable redis
 
 # install xdebug PHP extension
@@ -92,10 +92,8 @@ RUN npm install -g less clean-css uglify-js
 COPY test.php ./
 RUN php test.php && rm test.php
 RUN composer diagnose
-';
 
-        if ($imageType === 'selenium') {
-            $dockerFile .= '
+FROM base as selenium
 
 # install Selenium
 RUN apk add openjdk8-jre-base xvfb ttf-freefont && \
@@ -110,7 +108,6 @@ RUN apk add firefox && \
     tar -C /opt -zxf /tmp/geckodriver.tar.gz && rm /tmp/geckodriver.tar.gz && \
     chmod 755 /opt/geckodriver && ln -s /opt/geckodriver /usr/bin/geckodriver
 ';
-        }
 
         $dataDir = __DIR__ . '/data';
         $imageName = $phpVersion . ($imageType !== '' ? '-' : '') . $imageType;
@@ -130,7 +127,9 @@ $codefreshFile = 'version: "1.0"
 stages:
   - prepare
   - build
+  - build-selenium
   - test
+  - test-selenium
   - push
 steps:
   main_clone:
@@ -147,10 +146,25 @@ steps:
     return '      ' . $cfLabelFromName('b', $imageName) . ':
         type: build
         image_name: atk4/image
+        target: base
         tag: "${{CF_BUILD_ID}}-' . $imageName . '"
         registry: atk4
         dockerfile: data/' . $imageName . '/Dockerfile';
 }, $imageNames)) . '
+
+  build_selenium:
+    type: parallel
+    stage: build-selenium
+    steps:
+' . implode("\n", array_map(function ($imageName) use ($cfLabelFromName) {
+        return '      ' . $cfLabelFromName('b', $imageName.'-selenium') . ':
+        type: build
+        image_name: atk4/image
+        target: selenium
+        tag: "${{CF_BUILD_ID}}-' . $imageName . '-selenium"
+        registry: atk4
+        dockerfile: data/' . $imageName . '/Dockerfile';
+    }, $imageNames)) . '
 
   test:
     type: parallel
@@ -163,6 +177,18 @@ steps:
         commands:
           - php test.php';
 }, $imageNames)) . '
+
+  test_selenium:
+    type: parallel
+    stage: test-selenium
+    steps:
+' . implode("\n", array_map(function ($imageName) use ($cfLabelFromName) {
+        return '      ' . $cfLabelFromName('t', $imageName.'-selenium') . ':
+        image: "atk4/image:${{CF_BUILD_ID}}-' . $imageName . '-selenium"
+        registry: atk4
+        commands:
+          - php test.php';
+    }, $imageNames)) . '
 
   push:
     type: parallel
@@ -189,6 +215,9 @@ steps:
     }
 
     return implode("\n", $res);
-}, $imageNames)) . '
+}, array_merge(
+    $imageNames,
+    array_map(function($image_name) { return $image_name.'-selenium'; }, $imageNames)
+))).'
 ';
 file_put_contents(__DIR__ . '/.codefresh/deploy-build-image.yaml', $codefreshFile);

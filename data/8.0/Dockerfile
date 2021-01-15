@@ -1,4 +1,4 @@
-FROM php:8.0-alpine
+FROM php:8.0-alpine as base
 
 # install basic PHP
 RUN apk add bash git jq $PHPIZE_DEPS \
@@ -15,7 +15,7 @@ COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr
 RUN git clone https://github.com/Imagick/imagick && cd imagick \
     && phpize && ./configure && make all && make install \
     && echo "extension=imagick.so" >> /usr/local/etc/php/conf.d/docker-php-ext-imagick.ini
-RUN pickle install igbinary && docker-php-ext-enable igbinary
+#RUN pickle install igbinary && docker-php-ext-enable igbinary
 RUN pickle install redis --no-interaction && docker-php-ext-enable redis
 
 # install xdebug PHP extension
@@ -53,3 +53,18 @@ RUN npm install -g less clean-css uglify-js
 COPY test.php ./
 RUN php test.php && rm test.php
 RUN composer diagnose
+
+FROM base as selenium
+
+# install Selenium
+RUN apk add openjdk8-jre-base xvfb ttf-freefont && \
+    curl --fail --silent --show-error -L "https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar" -o /opt/selenium-server-standalone.jar
+
+# install Chrome
+RUN apk add chromium chromium-chromedriver
+
+# install Firefox
+RUN apk add firefox && \
+    curl --fail --silent --show-error -L "https://github.com/mozilla/geckodriver/releases/download/v0.28.0/geckodriver-v0.28.0-linux64.tar.gz" -o /tmp/geckodriver.tar.gz && \
+    tar -C /opt -zxf /tmp/geckodriver.tar.gz && rm /tmp/geckodriver.tar.gz && \
+    chmod 755 /opt/geckodriver && ln -s /opt/geckodriver /usr/bin/geckodriver
