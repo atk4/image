@@ -1,5 +1,17 @@
 <?php
 
+$cfLabelFromName = function(string $prefix, string $n): string {
+    return $prefix . preg_replace_callback('~\W~', function ($matches) {
+        if ($matches[0] === '.') {
+            return '_dot_';
+        } elseif ($matches[0] === '-') {
+            return '_dash_';
+        }
+
+        return '_x' . bin2hex($matches[0]) . '_';
+    }, $n);
+};
+
 $imageNames = [];
 foreach (['', 'selenium'] as $imageType) {
     foreach (['7.2', '7.3', '7.4', '8.0'] as $phpVersion) {
@@ -131,8 +143,8 @@ steps:
     type: parallel
     stage: build
     steps:
-' . implode("\n", array_map(function ($imageName) {
-    return '      b' . $imageName . ':
+' . implode("\n", array_map(function ($imageName) use ($cfLabelFromName) {
+    return '      ' . $cfLabelFromName('b', $imageName) . ':
         type: build
         image_name: atk4/image
         tag: "${{CF_BUILD_ID}}-' . $imageName . '"
@@ -144,8 +156,8 @@ steps:
     type: parallel
     stage: test
     steps:
-' . implode("\n", array_map(function ($imageName) {
-    return '      t' . $imageName . ':
+' . implode("\n", array_map(function ($imageName) use ($cfLabelFromName) {
+    return '      ' . $cfLabelFromName('t', $imageName) . ':
         image: "atk4/image:${{CF_BUILD_ID}}-' . $imageName . '"
         registry: atk4
         commands:
@@ -160,17 +172,17 @@ steps:
         only:
           - master
     steps:
-' . implode("\n", array_map(function ($imageName) {
+' . implode("\n", array_map(function ($imageName) use ($cfLabelFromName) {
     $res = [];
-    $res[] = '      p' . $imageName . ':
-        candidate: "${{b' . $imageName . '}}"
+    $res[] = '      ' . $cfLabelFromName('p', $imageName) . ':
+        candidate: "${{' . $cfLabelFromName('b', $imageName) . '}}"
         type: push
         registry: atk4
         tag: "' . $imageName . '"';
-    $imageNameLatest = preg_replace('~7.4~', 'latest', $imageName);
+    $imageNameLatest = preg_replace('~7\.4~', 'latest', $imageName);
     if ($imageNameLatest !== $imageName) {
-    $res[] = '      p' . $imageNameLatest . ':
-        candidate: "${{b' . $imageName . '}}"
+    $res[] = '      ' . $cfLabelFromName('p', $imageNameLatest) . ':
+        candidate: "${{' . $cfLabelFromName('b', $imageName) . '}}"
         type: push
         registry: atk4
         tag: "' . $imageNameLatest . '"';
