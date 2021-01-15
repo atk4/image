@@ -1,7 +1,7 @@
 <?php
 
 $imageNames = [];
-foreach (['', '-browser'] as $imageType) {
+foreach (['', 'selenium'] as $imageType) {
     foreach (['7.2', '7.3', '7.4', '8.0'] as $phpVersion) {
         $dockerFile = 'FROM php:' . $phpVersion . '-alpine
 
@@ -82,10 +82,31 @@ RUN php test.php && rm test.php
 RUN composer diagnose
 ';
 
+        if ($imageType === 'selenium') {
+            $dockerFile .= '
+
+# install Selenium
+RUN apk add openjdk8-jre-base xvfb ttf-freefont && \
+    curl --fail --silent --show-error -L "https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar" -o /opt/selenium-server-standalone.jar
+
+# install Chrome
+RUN apk add chromium chromium-chromedriver
+
+# install Firefox
+RUN apk firefox && \
+    curl --fail --silent --show-error -L "https://github.com/mozilla/geckodriver/releases/download/v0.28.0/geckodriver-v0.28.0-linux64.tar.gz" -o /tmp/geckodriver.tar.gz && \
+    tar -C /opt -zxf /tmp/geckodriver.tar.gz && rm /tmp/geckodriver.tar.gz && \
+    chmod 755 /opt/geckodriver && ln -s /opt/geckodriver /usr/bin/geckodriver
+';
+        }
+
         $dataDir = __DIR__ . '/data';
-        $imageName = $phpVersion . $imageType;
+        $imageName = $phpVersion . ($imageType !== '' ? '-' : '') . $imageType;
         $imageNames[] = $imageName;
 
+        if (!is_dir($dataDir)) {
+            mkdir($dataDir);
+        }
         if (!is_dir($dataDir . '/' . $imageName)) {
             mkdir($dataDir . '/' . $imageName);
         }

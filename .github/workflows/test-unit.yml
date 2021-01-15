@@ -18,5 +18,6 @@ jobs:
 
       - name: "Check if files are in-sync"
         run: |
+          rm -rf data/
           php make.php
           git diff --exit-code
