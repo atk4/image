@@ -211,7 +211,7 @@ steps:
 file_put_contents(__DIR__ . '/.codefresh/deploy-build-image.yaml', $codefreshFile);
 
 
-$codefreshFile = 'name: CI
+$ciFile = 'name: CI
 
 on:
   pull_request:
@@ -252,4 +252,4 @@ jobs:
       - name: Build Dockerfile
         run: docker build -f data/${{ matrix.imageName }}/Dockerfile ./
 ';
-file_put_contents(__DIR__ . '/.github/workflows/ci.yml', $codefreshFile);
+file_put_contents(__DIR__ . '/.github/workflows/ci.yml', $ciFile);
