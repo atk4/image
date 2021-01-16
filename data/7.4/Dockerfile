@@ -13,7 +13,7 @@ COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr
 
 # install basic PECL extensions
 RUN pickle install imagick && docker-php-ext-enable imagick
-RUN install-php-extensions igbinary-3.2.1
+RUN install-php-extensions igbinary
 RUN pickle install redis --no-interaction && docker-php-ext-enable redis
 
 # install xdebug PHP extension

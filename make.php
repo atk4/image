@@ -36,7 +36,7 @@ $phpVersion < 8
     && phpize && ./configure && make all && make install \
     && echo "extension=imagick.so" >> /usr/local/etc/php/conf.d/docker-php-ext-imagick.ini'
 ) . '
-RUN install-php-extensions igbinary-3.2.1' . /* @TODO remove "-3.2.1" once https://github.com/mlocati/docker-php-extension-installer/issues/248 is fixed */ '
+RUN install-php-extensions igbinary
 RUN pickle install redis --no-interaction && docker-php-ext-enable redis
 
 # install xdebug PHP extension
