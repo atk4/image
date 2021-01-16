@@ -33,10 +33,7 @@ RUN curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac
     ln -sfnv /opt/mssql-tools/bin/* /usr/bin
 
 # install pdo_sqlsrv PHP extension
-RUN apk add libstdc++ unixodbc unixodbc-dev && \
-    git clone https://github.com/microsoft/msphpsql && cd msphpsql \
-    && phpize && ./configure && make && make install \
-    && echo "extension=pdo_sqlsrv.so" >> /usr/local/etc/php/conf.d/docker-php-ext-pdo_sqlsrv.ini
+RUN install-php-extensions pdo_sqlsrv
 
 
 # install Oracle Instant client & pdo_oci PHP extension
@@ -45,7 +42,7 @@ RUN install-php-extensions pdo_oci
 
 # remove build deps
 RUN apk del --purge $PHPIZE_DEPS gmp-dev icu-dev libpng-dev imagemagick-dev \
-        tidyhtml-dev libxslt-dev libzip-dev postgresql-dev imap-dev unixodbc-dev
+        tidyhtml-dev libxslt-dev libzip-dev postgresql-dev imap-dev
 
 
 # other
