@@ -24,15 +24,7 @@ RUN git clone https://github.com/xdebug/xdebug && cd xdebug \
     && echo "zend_extension=xdebug.so" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
 
-# install Microsoft ODBC drivers
-# based on https://github.com/microsoft/msphpsql/issues/300#issuecomment-673143369
-RUN curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac7-8d28ddafb39b/msodbcsql17_17.6.1.1-1_amd64.apk -sS && \
-    curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac7-8d28ddafb39b/mssql-tools_17.6.1.1-1_amd64.apk -sS && \
-    printf '\n' | apk add --allow-untrusted msodbcsql17_17.6.1.1-1_amd64.apk && \
-    printf '\n' | apk add --allow-untrusted mssql-tools_17.6.1.1-1_amd64.apk && \
-    ln -sfnv /opt/mssql-tools/bin/* /usr/bin
-
-# install pdo_sqlsrv PHP extension
+# install Microsoft ODBC drivers & pdo_sqlsrv PHP extension
 RUN install-php-extensions pdo_sqlsrv
 
 
