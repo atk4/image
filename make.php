@@ -160,7 +160,7 @@ steps:
     stage: build_selenium
     steps:
 ' . implode("\n", array_map(function ($imageName) use ($cfLabelFromName) {
-        return '      ' . $cfLabelFromName('b', $imageName.'-selenium') . ':
+        return '      ' . $cfLabelFromName('b', $imageName . '-selenium') . ':
         type: build
         image_name: atk4/image
         target: selenium
