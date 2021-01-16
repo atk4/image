@@ -250,6 +250,9 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build Dockerfile
-        run: docker build -f data/${{ matrix.imageName }}/Dockerfile ./
+        # try to build twice to suppress random network issues with Github Actions
+        run: >-
+          docker build -f data/${{ matrix.imageName }}/Dockerfile ./
+          || docker build -f data/${{ matrix.imageName }}/Dockerfile ./
 ';
 file_put_contents(__DIR__ . '/.github/workflows/ci.yml', $ciFile);
