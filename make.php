@@ -40,15 +40,7 @@ $phpVersion < 8
 RUN pickle install redis --no-interaction && docker-php-ext-enable redis
 
 # install xdebug PHP extension
-' . (
-$phpVersion < 8
-// @TODO install using pickle once https://bugs.xdebug.org/view.php?id=1886 is resolved
-? 'RUN pecl install xdebug && docker-php-ext-enable xdebug'
-// @TODO install using pickle once xdebug 3.0 stable is released, see https://github.com/xdebug/xdebug/releases
-: 'RUN git clone https://github.com/xdebug/xdebug && cd xdebug \
-    && phpize && ./configure --enable-xdebug-dev && make all && make install \
-    && echo "zend_extension=xdebug.so" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini'
-) . '
+RUN pecl install xdebug && docker-php-ext-enable xdebug
 
 
 # install Microsoft ODBC drivers

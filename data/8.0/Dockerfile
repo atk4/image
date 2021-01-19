@@ -19,9 +19,7 @@ RUN git clone https://github.com/Imagick/imagick && cd imagick \
 RUN pickle install redis --no-interaction && docker-php-ext-enable redis
 
 # install xdebug PHP extension
-RUN git clone https://github.com/xdebug/xdebug && cd xdebug \
-    && phpize && ./configure --enable-xdebug-dev && make all && make install \
-    && echo "zend_extension=xdebug.so" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+RUN pecl install xdebug && docker-php-ext-enable xdebug
 
 
 # install Microsoft ODBC drivers
