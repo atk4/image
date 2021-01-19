@@ -18,6 +18,7 @@ $missingExts = array_diff([
     'PDO_OCI',
     'pdo_pgsql',
     'pdo_sqlite',
+    'pdo_sqlsrv',
     'pcntl',
     'redis',
     'sockets',
@@ -29,11 +30,6 @@ $missingExts = array_diff([
     'Zend OPcache',
     'zip',
 ], get_loaded_extensions());
-
-// TODO remove once pdo_sqlsrv is avaiable for PHP 8.0
-if (PHP_MAJOR_VERSION === 8) {
-    unset($missingExts[array_search('pdo_sqlsrv', $missingExts)]);
-}
 
 if (count($missingExts) > 0) {
     echo 'ERROR - missing php extensions: ' . implode(', ', $missingExts) . "\n";
