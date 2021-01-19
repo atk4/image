@@ -2,13 +2,12 @@
 
 $cfLabelFromName = function(string $prefix, string $n): string {
     return $prefix . preg_replace_callback('~\W~', function ($matches) {
-        if ($matches[0] === '.') {
-            return '_dot_';
-        } elseif ($matches[0] === '-') {
-            return '_dash_';
-        }
-
-        return '_x' . bin2hex($matches[0]) . '_';
+        return '_'
+            . ([
+                '.' => 'dot',
+                '-' => 'dash',
+            ][$matches[0]] ?? '0x' . bin2hex($matches[0]))
+            . '_';
     }, $n);
 };
 
@@ -123,13 +122,17 @@ RUN apk add firefox && \
     }
 }
 
+$imageNamesExtended = array_merge(
+    $imageNames,
+    array_map(function($imageName) { return $imageName. '-selenium'; }, $imageNames)
+);
+
 $codefreshFile = 'version: "1.0"
 stages:
   - prepare
   - build
-  - build-selenium
+  - build_selenium
   - test
-  - test-selenium
   - push
 steps:
   main_clone:
@@ -154,10 +157,10 @@ steps:
 
   build_selenium:
     type: parallel
-    stage: build-selenium
+    stage: build_selenium
     steps:
 ' . implode("\n", array_map(function ($imageName) use ($cfLabelFromName) {
-        return '      ' . $cfLabelFromName('b', $imageName.'-selenium') . ':
+        return '      ' . $cfLabelFromName('b', $imageName . '-selenium') . ':
         type: build
         image_name: atk4/image
         target: selenium
@@ -176,19 +179,7 @@ steps:
         registry: atk4
         commands:
           - php test.php';
-}, $imageNames)) . '
-
-  test_selenium:
-    type: parallel
-    stage: test-selenium
-    steps:
-' . implode("\n", array_map(function ($imageName) use ($cfLabelFromName) {
-        return '      ' . $cfLabelFromName('t', $imageName.'-selenium') . ':
-        image: "atk4/image:${{CF_BUILD_ID}}-' . $imageName . '-selenium"
-        registry: atk4
-        commands:
-          - php test.php';
-    }, $imageNames)) . '
+}, $imageNamesExtended)) . '
 
   push:
     type: parallel
@@ -215,9 +206,53 @@ steps:
     }
 
     return implode("\n", $res);
-}, array_merge(
-    $imageNames,
-    array_map(function($image_name) { return $image_name.'-selenium'; }, $imageNames)
-))).'
+}, $imageNamesExtended)).'
 ';
 file_put_contents(__DIR__ . '/.codefresh/deploy-build-image.yaml', $codefreshFile);
+
+
+$ciFile = 'name: CI
+
+on:
+  pull_request:
+  push:
+  schedule:
+    - cron: \'20 */2 * * *\'
+
+jobs:
+  unit:
+    name: Templating
+    runs-on: ubuntu-latest
+    container:
+      image: atk4/image
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: "Check if files are in-sync"
+        run: |
+          rm -rf data/
+          php make.php
+          git diff --exit-code
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        imageName:
+'. implode("\n", array_map(function ($imageName) {
+    return '          - "' . $imageName . '"';
+}, $imageNames)) . '
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Build Dockerfile
+        # try to build twice to suppress random network issues with Github Actions
+        run: >-
+          docker build -f data/${{ matrix.imageName }}/Dockerfile ./
+          || docker build -f data/${{ matrix.imageName }}/Dockerfile ./
+';
+file_put_contents(__DIR__ . '/.github/workflows/ci.yml', $ciFile);
