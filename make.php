@@ -23,7 +23,6 @@ RUN apk add bash git jq $PHPIZE_DEPS \
         mysql-client postgresql-client postgresql-dev c-client imap-dev \
         npm && \
     docker-php-ext-install bcmath gmp intl exif gd sockets tidy xsl zip mysqli pdo_mysql pdo_pgsql pcntl imap opcache
-RUN wget -q https://getcomposer.org/installer -O - | php -- --install-dir=/usr/local/bin --filename=composer
 RUN wget -q https://github.com/FriendsOfPHP/pickle/releases/latest/download/pickle.phar -O /usr/local/bin/pickle && chmod +x /usr/local/bin/pickle
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
@@ -56,7 +55,8 @@ RUN apk del --purge $PHPIZE_DEPS gmp-dev icu-dev libpng-dev imagemagick-dev \
         tidyhtml-dev libxslt-dev libzip-dev postgresql-dev imap-dev
 
 
-# other
+# install Composer & other tools
+RUN install-php-extensions @composer
 RUN npm install -g less clean-css uglify-js
 
 
