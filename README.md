@@ -5,3 +5,7 @@
 This repository builds and publishes the following images:
 
  - atk4/image - build image used in our workflows. Will have tags 7.2, 7.3, 7.4, 8.0, latest etc
+
+## Running Locally
+
+Run `php make.php` to regenerate Dockerfiles.
