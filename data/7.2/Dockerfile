@@ -1,41 +1,36 @@
 FROM php:7.2-alpine as base
 
-# install basic PHP
-RUN apk add bash git jq $PHPIZE_DEPS \
-        gmp gmp-dev icu-libs icu-dev libpng libpng-dev imagemagick imagemagick-dev \
-        tidyhtml-libs tidyhtml-dev libxslt libxslt-dev libzip libzip-dev \
-        mysql-client postgresql-client postgresql-dev c-client imap-dev \
-        npm && \
-    docker-php-ext-install bcmath gmp intl exif gd sockets tidy xsl zip mysqli pdo_mysql pdo_pgsql pcntl imap opcache
-RUN wget -q https://github.com/FriendsOfPHP/pickle/releases/latest/download/pickle.phar -O /usr/local/bin/pickle && chmod +x /usr/local/bin/pickle
+# install system tools
+RUN apk add bash git jq mysql-client postgresql-client npm
+
+# install PHP extensions and Composer
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+RUN install-php-extensions \
+    bcmath \
+    exif \
+    gd \
+    gmp \
+    igbinary \
+    imagick \
+    imap \
+    intl \
+    mysqli \
+    opcache \
+    pcntl \
+    pdo_mysql \
+    pdo_oci \
+    pdo_pgsql \
+    pdo_sqlsrv \
+    redis \
+    sockets \
+    tidy \
+    xdebug \
+    xsl \
+    zip \
+    @composer
 
-# install basic PECL extensions
-RUN pickle install imagick && docker-php-ext-enable imagick
-RUN install-php-extensions igbinary
-RUN pickle install redis --no-interaction && docker-php-ext-enable redis
-
-# install xdebug PHP extension
-RUN pecl install xdebug && docker-php-ext-enable xdebug
-
-
-# install Microsoft ODBC drivers & pdo_sqlsrv PHP extension
-RUN install-php-extensions pdo_sqlsrv
-
-
-# install Oracle Instant client & pdo_oci PHP extension
-RUN install-php-extensions pdo_oci
-
-
-# remove build deps
-RUN apk del --purge $PHPIZE_DEPS gmp-dev icu-dev libpng-dev imagemagick-dev \
-        tidyhtml-dev libxslt-dev libzip-dev postgresql-dev imap-dev
-
-
-# install Composer & other tools
-RUN install-php-extensions @composer
+# Install other tools
 RUN npm install -g less clean-css uglify-js
-
 
 # run basic tests
 COPY test.php ./
