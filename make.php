@@ -44,7 +44,7 @@ RUN install-php-extensions zip
 RUN install-php-extensions @composer
 
 # install other tools
-RUN apk add bash git npm
+RUN apk add bash git
 
 # run basic tests
 COPY test.php ./
@@ -53,6 +53,9 @@ RUN composer diagnose
 
 
 FROM base as selenium
+
+# install npm
+RUN apk add npm
 
 # install Selenium
 RUN apk add openjdk8-jre-base xvfb ttf-freefont \
