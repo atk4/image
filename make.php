@@ -16,8 +16,8 @@ $imageTypes = [''];
 $targetNames = ['base', 'npm', 'selenium'];
 
 $aliasesPhpVersions = [
-    '7.4' => ['7'],
-    '8.0' => ['8', 'latest'],
+    '7.4' => ['7.x'],
+    '8.0' => ['8.x', 'latest'],
 ];
 
 $genImageTags = function(string $imageName) use ($aliasesPhpVersions): array {
