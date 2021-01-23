@@ -36,10 +36,13 @@ RUN php test.php && rm test.php
 RUN composer diagnose
 
 
-FROM base as selenium
+FROM base as npm
 
 # install npm
 RUN apk add npm
+
+
+FROM npm as selenium
 
 # install Selenium
 RUN apk add openjdk8-jre-base xvfb ttf-freefont \

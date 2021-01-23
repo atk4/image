@@ -52,10 +52,13 @@ RUN php test.php && rm test.php
 RUN composer diagnose
 
 
-FROM base as selenium
+FROM base as npm
 
 # install npm
 RUN apk add npm
+
+
+FROM npm as selenium
 
 # install Selenium
 RUN apk add openjdk8-jre-base xvfb ttf-freefont \
@@ -85,16 +88,22 @@ RUN apk add firefox \
     }
 }
 
+$targetNames = ['base', 'npm', 'selenium'];
+
 $imageNamesExtended = array_merge(
-    $imageNames,
-    array_map(function($imageName) { return $imageName. '-selenium'; }, $imageNames)
+    ...array_map(function ($targetName) use ($imageNames) {
+        return array_map(function($imageName) use ($targetName) {
+            return $imageName . ($targetName === 'base' ? '' : '-' . $targetName);
+        }, $imageNames);
+    }, $targetNames)
 );
 
 $codefreshFile = 'version: "1.0"
 stages:
   - prepare
-  - build
-  - build_selenium
+' . implode("\n", array_map(function ($targetName) use ($cfLabelFromName) {
+    return '  - ' . $cfLabelFromName('build_', $targetName);
+}, $targetNames)) . '
   - test
   - push
 steps:
@@ -104,33 +113,21 @@ steps:
     repo: atk4/image
     revision: "${{CF_BRANCH}}"
 
-  build:
+' . implode("\n\n", array_map(function ($targetName) use ($imageNames, $cfLabelFromName) {
+    return '  ' . $cfLabelFromName('build_', $targetName) . ':
     type: parallel
-    stage: build
+    stage: ' . $cfLabelFromName('build_', $targetName) . '
     steps:
-' . implode("\n", array_map(function ($imageName) use ($cfLabelFromName) {
-    return '      ' . $cfLabelFromName('b', $imageName) . ':
+' . implode("\n", array_map(function ($imageName) use ($targetName, $cfLabelFromName) {
+        return '      ' . $cfLabelFromName('b', $imageName . ($targetName === 'base' ? '' : '-' . $targetName)) . ':
         type: build
         image_name: atk4/image
-        target: base
-        tag: "${{CF_BUILD_ID}}-' . $imageName . '"
+        target: ' . $targetName . '
+        tag: "${{CF_BUILD_ID}}-' . $imageName . ($targetName === 'base' ? '' : '-' . $targetName) . '"
         registry: atk4
         dockerfile: data/' . $imageName . '/Dockerfile';
-}, $imageNames)) . '
-
-  build_selenium:
-    type: parallel
-    stage: build_selenium
-    steps:
-' . implode("\n", array_map(function ($imageName) use ($cfLabelFromName) {
-        return '      ' . $cfLabelFromName('b', $imageName . '-selenium') . ':
-        type: build
-        image_name: atk4/image
-        target: selenium
-        tag: "${{CF_BUILD_ID}}-' . $imageName . '-selenium"
-        registry: atk4
-        dockerfile: data/' . $imageName . '/Dockerfile';
-    }, $imageNames)) . '
+    }, $imageNames));
+}, $targetNames)) . '
 
   test:
     type: parallel
