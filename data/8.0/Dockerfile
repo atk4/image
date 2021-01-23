@@ -1,35 +1,33 @@
 FROM php:8.0-alpine as base
 
-# install basic PHP
+# install common PHP extensions
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+RUN install-php-extensions bcmath
 RUN install-php-extensions gmp
-RUN apk add $PHPIZE_DEPS icu-libs icu-dev libpng libpng-dev \
-        tidyhtml-libs tidyhtml-dev libxslt libxslt-dev libzip libzip-dev \
-        mysql-client postgresql-client postgresql-dev c-client imap-dev \
-    && docker-php-ext-install bcmath intl exif gd sockets tidy xsl zip mysqli pdo_mysql pdo_pgsql pcntl imap opcache
-
-# install basic PECL extensions
+RUN install-php-extensions intl
+RUN install-php-extensions exif
+RUN install-php-extensions gd
 RUN install-php-extensions imagick
-RUN install-php-extensions igbinary
+RUN install-php-extensions sockets
+RUN install-php-extensions tidy
+RUN install-php-extensions xsl
+RUN install-php-extensions zip
+RUN install-php-extensions mysqli
+RUN install-php-extensions pdo_mysql
+RUN install-php-extensions pdo_pgsql
+RUN install-php-extensions pdo_sqlsrv
+RUN install-php-extensions pdo_oci
 RUN install-php-extensions redis
-
-# install xdebug PHP extension
+RUN install-php-extensions igbinary
+RUN install-php-extensions pcntl
+RUN install-php-extensions imap
+RUN install-php-extensions opcache
 RUN install-php-extensions xdebug
 
-# install Microsoft ODBC drivers & pdo_sqlsrv PHP extension
-RUN install-php-extensions pdo_sqlsrv
-
-# install Oracle Instant client & pdo_oci PHP extension
-RUN install-php-extensions pdo_oci
-
-
-# remove build deps
-RUN apk del --purge $PHPIZE_DEPS icu-dev libpng-dev \
-        tidyhtml-dev libxslt-dev libzip-dev postgresql-dev imap-dev
-
-
-# install Composer & other tools
+# install Composer
 RUN install-php-extensions @composer
+
+# install  other tools
 RUN apk add bash git npm
 
 
@@ -37,6 +35,7 @@ RUN apk add bash git npm
 COPY test.php ./
 RUN php test.php && rm test.php
 RUN composer diagnose
+
 
 FROM base as selenium
 
