@@ -4,27 +4,27 @@
 
 This repository builds and publishes the following images:
 
-- `5.6`
+- `5.6` `5`
 - `7.0`
 - `7.1`
 - `7.2`
 - `7.3`
-- `7.4`
-- `8.0` `latest`
-- `5.6-npm`
+- `7.4` `7`
+- `8.0` `8` `latest`
+- `5.6-npm` `5-npm`
 - `7.0-npm`
 - `7.1-npm`
 - `7.2-npm`
 - `7.3-npm`
-- `7.4-npm`
-- `8.0-npm` `latest-npm`
-- `5.6-selenium`
+- `7.4-npm` `7-npm`
+- `8.0-npm` `8-npm` `latest-npm`
+- `5.6-selenium` `5-selenium`
 - `7.0-selenium`
 - `7.1-selenium`
 - `7.2-selenium`
 - `7.3-selenium`
-- `7.4-selenium`
-- `8.0-selenium` `latest-selenium`
+- `7.4-selenium` `7-selenium`
+- `8.0-selenium` `8-selenium` `latest-selenium`
 
 ## Running Locally
 

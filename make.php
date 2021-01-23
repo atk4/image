@@ -15,6 +15,26 @@ $phpVersions = ['5.6', '7.0', '7.1', '7.2', '7.3', '7.4', '8.0'];
 $imageTypes = [''];
 $targetNames = ['base', 'npm', 'selenium'];
 
+$aliasesPhpVersions = [
+    '5.6' => ['5'],
+    '7.4' => ['7'],
+    '8.0' => ['8', 'latest'],
+];
+
+$genImageTags = function(string $imageName) use ($aliasesPhpVersions): array {
+    $res = [$imageName];
+    foreach ($aliasesPhpVersions as $phpVersion => $aliases) {
+        foreach ($aliases as $alias) {
+            $v = preg_replace('~(?<!\d)' . preg_quote($phpVersion, '~') . '(?!\d)~', $alias, $imageName);
+            if ($v !== $imageName) {
+                $res[] = $v;
+            }
+        }
+    }
+
+    return $res;
+};
+
 $imageNames = [];
 foreach ($imageTypes as $imageType) {
     foreach ($phpVersions as $phpVersion) {
@@ -151,23 +171,14 @@ steps:
         only:
           - master
     steps:
-' . implode("\n", array_map(function ($imageName) use ($cfLabelFromName) {
-    $res = [];
-    $res[] = '      ' . $cfLabelFromName('p', $imageName) . ':
+' . implode("\n", array_map(function ($imageName) use ($genImageTags, $cfLabelFromName) {
+    return implode("\n", array_map(function ($imageName) use ($cfLabelFromName) {
+        return '      ' . $cfLabelFromName('p', $imageName) . ':
         candidate: "${{' . $cfLabelFromName('b', $imageName) . '}}"
         type: push
         registry: atk4
         tag: "' . $imageName . '"';
-    $imageNameLatest = preg_replace('~(?<!\d)' . preg_quote('8.0', '~') . '(?!\d)~', 'latest', $imageName);
-    if ($imageNameLatest !== $imageName) {
-    $res[] = '      ' . $cfLabelFromName('p', $imageNameLatest) . ':
-        candidate: "${{' . $cfLabelFromName('b', $imageName) . '}}"
-        type: push
-        registry: atk4
-        tag: "' . $imageNameLatest . '"';
-    }
-
-    return implode("\n", $res);
+    }, $genImageTags($imageName)));
 }, $imageNamesExtended)).'
 ';
 file_put_contents(__DIR__ . '/.codefresh/deploy-build-image.yaml', $codefreshFile);
@@ -226,15 +237,10 @@ $readmeFile = '# Container Images for ATK
 
 This repository builds and publishes the following images:
 
-' . implode("\n", array_map(function ($imageName) use ($cfLabelFromName) {
-    $tags = [];
-    $tags[] = $imageName;
-    $imageNameLatest = preg_replace('~(?<!\d)' . preg_quote('8.0', '~') . '(?!\d)~', 'latest', $imageName);
-    if ($imageNameLatest !== $imageName) {
-        $tags[] = $imageNameLatest;
-    }
-
-    return '- ' . implode(' ', array_map(function ($tag) { return '`' . $tag . '`'; }, $tags));
+' . implode("\n", array_map(function ($imageName) use ($genImageTags, $cfLabelFromName) {
+    return '- ' . implode(' ', array_map(function ($imageName) {
+        return '`' . $imageName . '`';
+    }, $genImageTags($imageName)));
 }, $imageNamesExtended)).'
 
 ## Running Locally

@@ -298,6 +298,11 @@ steps:
         type: push
         registry: atk4
         tag: "5.6"
+      p5:
+        candidate: "${{b5}}"
+        type: push
+        registry: atk4
+        tag: "5"
       p7_dot_0:
         candidate: "${{b7_dot_0}}"
         type: push
@@ -323,13 +328,23 @@ steps:
         type: push
         registry: atk4
         tag: "7.4"
+      p7:
+        candidate: "${{b7}}"
+        type: push
+        registry: atk4
+        tag: "7"
       p8_dot_0:
         candidate: "${{b8_dot_0}}"
         type: push
         registry: atk4
         tag: "8.0"
+      p8:
+        candidate: "${{b8}}"
+        type: push
+        registry: atk4
+        tag: "8"
       platest:
-        candidate: "${{b8_dot_0}}"
+        candidate: "${{blatest}}"
         type: push
         registry: atk4
         tag: "latest"
@@ -338,6 +353,11 @@ steps:
         type: push
         registry: atk4
         tag: "5.6-npm"
+      p5_dash_npm:
+        candidate: "${{b5_dash_npm}}"
+        type: push
+        registry: atk4
+        tag: "5-npm"
       p7_dot_0_dash_npm:
         candidate: "${{b7_dot_0_dash_npm}}"
         type: push
@@ -363,13 +383,23 @@ steps:
         type: push
         registry: atk4
         tag: "7.4-npm"
+      p7_dash_npm:
+        candidate: "${{b7_dash_npm}}"
+        type: push
+        registry: atk4
+        tag: "7-npm"
       p8_dot_0_dash_npm:
         candidate: "${{b8_dot_0_dash_npm}}"
         type: push
         registry: atk4
         tag: "8.0-npm"
+      p8_dash_npm:
+        candidate: "${{b8_dash_npm}}"
+        type: push
+        registry: atk4
+        tag: "8-npm"
       platest_dash_npm:
-        candidate: "${{b8_dot_0_dash_npm}}"
+        candidate: "${{blatest_dash_npm}}"
         type: push
         registry: atk4
         tag: "latest-npm"
@@ -378,6 +408,11 @@ steps:
         type: push
         registry: atk4
         tag: "5.6-selenium"
+      p5_dash_selenium:
+        candidate: "${{b5_dash_selenium}}"
+        type: push
+        registry: atk4
+        tag: "5-selenium"
       p7_dot_0_dash_selenium:
         candidate: "${{b7_dot_0_dash_selenium}}"
         type: push
@@ -403,13 +438,23 @@ steps:
         type: push
         registry: atk4
         tag: "7.4-selenium"
+      p7_dash_selenium:
+        candidate: "${{b7_dash_selenium}}"
+        type: push
+        registry: atk4
+        tag: "7-selenium"
       p8_dot_0_dash_selenium:
         candidate: "${{b8_dot_0_dash_selenium}}"
         type: push
         registry: atk4
         tag: "8.0-selenium"
+      p8_dash_selenium:
+        candidate: "${{b8_dash_selenium}}"
+        type: push
+        registry: atk4
+        tag: "8-selenium"
       platest_dash_selenium:
-        candidate: "${{b8_dot_0_dash_selenium}}"
+        candidate: "${{blatest_dash_selenium}}"
         type: push
         registry: atk4
         tag: "latest-selenium"
