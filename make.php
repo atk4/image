@@ -19,33 +19,32 @@ foreach ([''] as $imageType) {
 # install common PHP extensions
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 RUN install-php-extensions bcmath
-RUN install-php-extensions gmp
-RUN install-php-extensions intl
 RUN install-php-extensions exif
 RUN install-php-extensions gd
+RUN install-php-extensions gmp
+RUN install-php-extensions igbinary
 RUN install-php-extensions imagick
-RUN install-php-extensions sockets
-RUN install-php-extensions tidy
-RUN install-php-extensions xsl
-RUN install-php-extensions zip
+RUN install-php-extensions imap
+RUN install-php-extensions intl
 RUN install-php-extensions mysqli
+RUN install-php-extensions opcache
+RUN install-php-extensions pcntl
 RUN install-php-extensions pdo_mysql
+RUN install-php-extensions pdo_oci
 RUN install-php-extensions pdo_pgsql
 RUN install-php-extensions pdo_sqlsrv
-RUN install-php-extensions pdo_oci
 RUN install-php-extensions redis
-RUN install-php-extensions igbinary
-RUN install-php-extensions pcntl
-RUN install-php-extensions imap
-RUN install-php-extensions opcache
+RUN install-php-extensions sockets
+RUN install-php-extensions tidy
 RUN install-php-extensions xdebug
+RUN install-php-extensions xsl
+RUN install-php-extensions zip
 
 # install Composer
 RUN install-php-extensions @composer
 
-# install  other tools
+# install other tools
 RUN apk add bash git npm
-
 
 # run basic tests
 COPY test.php ./
