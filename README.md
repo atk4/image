@@ -4,7 +4,27 @@
 
 This repository builds and publishes the following images:
 
- - atk4/image - build image used in our workflows. Will have tags 7.2, 7.3, 7.4, 8.0, latest etc
+- `5.6`
+- `7.0`
+- `7.1`
+- `7.2`
+- `7.3`
+- `7.4`
+- `8.0` `latest`
+- `5.6-npm`
+- `7.0-npm`
+- `7.1-npm`
+- `7.2-npm`
+- `7.3-npm`
+- `7.4-npm`
+- `8.0-npm` `latest-npm`
+- `5.6-selenium`
+- `7.0-selenium`
+- `7.1-selenium`
+- `7.2-selenium`
+- `7.3-selenium`
+- `7.4-selenium`
+- `8.0-selenium` `latest-selenium`
 
 ## Running Locally
 
