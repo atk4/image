@@ -17,6 +17,13 @@ steps:
     type: parallel
     stage: build_base
     steps:
+      b7_dot_1:
+        type: build
+        image_name: atk4/image
+        target: base
+        tag: "${{CF_BUILD_ID}}-7.1"
+        registry: atk4
+        dockerfile: data/7.1/Dockerfile
       b7_dot_2:
         type: build
         image_name: atk4/image
@@ -50,6 +57,13 @@ steps:
     type: parallel
     stage: build_npm
     steps:
+      b7_dot_1_dash_npm:
+        type: build
+        image_name: atk4/image
+        target: npm
+        tag: "${{CF_BUILD_ID}}-7.1-npm"
+        registry: atk4
+        dockerfile: data/7.1/Dockerfile
       b7_dot_2_dash_npm:
         type: build
         image_name: atk4/image
@@ -83,6 +97,13 @@ steps:
     type: parallel
     stage: build_selenium
     steps:
+      b7_dot_1_dash_selenium:
+        type: build
+        image_name: atk4/image
+        target: selenium
+        tag: "${{CF_BUILD_ID}}-7.1-selenium"
+        registry: atk4
+        dockerfile: data/7.1/Dockerfile
       b7_dot_2_dash_selenium:
         type: build
         image_name: atk4/image
@@ -116,6 +137,11 @@ steps:
     type: parallel
     stage: test
     steps:
+      t7_dot_1:
+        image: "atk4/image:${{CF_BUILD_ID}}-7.1"
+        registry: atk4
+        commands:
+          - php test.php
       t7_dot_2:
         image: "atk4/image:${{CF_BUILD_ID}}-7.2"
         registry: atk4
@@ -136,6 +162,11 @@ steps:
         registry: atk4
         commands:
           - php test.php
+      t7_dot_1_dash_npm:
+        image: "atk4/image:${{CF_BUILD_ID}}-7.1-npm"
+        registry: atk4
+        commands:
+          - php test.php
       t7_dot_2_dash_npm:
         image: "atk4/image:${{CF_BUILD_ID}}-7.2-npm"
         registry: atk4
@@ -153,6 +184,11 @@ steps:
           - php test.php
       t8_dot_0_dash_npm:
         image: "atk4/image:${{CF_BUILD_ID}}-8.0-npm"
+        registry: atk4
+        commands:
+          - php test.php
+      t7_dot_1_dash_selenium:
+        image: "atk4/image:${{CF_BUILD_ID}}-7.1-selenium"
         registry: atk4
         commands:
           - php test.php
@@ -185,6 +221,11 @@ steps:
         only:
           - master
     steps:
+      p7_dot_1:
+        candidate: "${{b7_dot_1}}"
+        type: push
+        registry: atk4
+        tag: "7.1"
       p7_dot_2:
         candidate: "${{b7_dot_2}}"
         type: push
@@ -210,6 +251,11 @@ steps:
         type: push
         registry: atk4
         tag: "latest"
+      p7_dot_1_dash_npm:
+        candidate: "${{b7_dot_1_dash_npm}}"
+        type: push
+        registry: atk4
+        tag: "7.1-npm"
       p7_dot_2_dash_npm:
         candidate: "${{b7_dot_2_dash_npm}}"
         type: push
@@ -235,6 +281,11 @@ steps:
         type: push
         registry: atk4
         tag: "latest-npm"
+      p7_dot_1_dash_selenium:
+        candidate: "${{b7_dot_1_dash_selenium}}"
+        type: push
+        registry: atk4
+        tag: "7.1-selenium"
       p7_dot_2_dash_selenium:
         candidate: "${{b7_dot_2_dash_selenium}}"
         type: push
