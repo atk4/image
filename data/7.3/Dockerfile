@@ -15,7 +15,7 @@ RUN install-php-extensions igbinary
 RUN pickle install redis --no-interaction && docker-php-ext-enable redis
 
 # install xdebug PHP extension
-RUN pecl install xdebug && docker-php-ext-enable xdebug
+RUN install-php-extensions xdebug
 
 
 # install Microsoft ODBC drivers & pdo_sqlsrv PHP extension
