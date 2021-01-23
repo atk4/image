@@ -11,12 +11,11 @@ $cfLabelFromName = function(string $prefix, string $n): string {
     }, $n);
 };
 
-$phpVersions = ['5.6', '7.0', '7.1', '7.2', '7.3', '7.4', '8.0'];
+$phpVersions = ['7.2', '7.3', '7.4', '8.0'];
 $imageTypes = [''];
 $targetNames = ['base', 'npm', 'selenium'];
 
 $aliasesPhpVersions = [
-    '5.6' => ['5'],
     '7.4' => ['7'],
     '8.0' => ['8', 'latest'],
 ];
