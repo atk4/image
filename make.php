@@ -18,11 +18,12 @@ foreach ([''] as $imageType) {
 
 # install basic PHP
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+RUN install-php-extensions bcmath
 RUN install-php-extensions gmp
 RUN apk add $PHPIZE_DEPS icu-libs icu-dev libpng libpng-dev \
         tidyhtml-libs tidyhtml-dev libxslt libxslt-dev libzip libzip-dev \
         mysql-client postgresql-client postgresql-dev c-client imap-dev \
-    && docker-php-ext-install bcmath intl exif gd sockets tidy xsl zip mysqli pdo_mysql pdo_pgsql pcntl imap opcache
+    && docker-php-ext-install intl exif gd sockets tidy xsl zip mysqli pdo_mysql pdo_pgsql pcntl imap opcache
 
 # install basic PECL extensions
 RUN install-php-extensions imagick
