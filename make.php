@@ -19,21 +19,14 @@ foreach ([''] as $imageType) {
 # install basic PHP
 RUN apk add bash git npm
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
-RUN apk add $PHPIZE_DEPS gmp gmp-dev icu-libs icu-dev libpng libpng-dev imagemagick imagemagick-dev \
+RUN apk add $PHPIZE_DEPS gmp gmp-dev icu-libs icu-dev libpng libpng-dev \
         tidyhtml-libs tidyhtml-dev libxslt libxslt-dev libzip libzip-dev \
         mysql-client postgresql-client postgresql-dev c-client imap-dev \
     && docker-php-ext-install bcmath gmp intl exif gd sockets tidy xsl zip mysqli pdo_mysql pdo_pgsql pcntl imap opcache
 RUN wget -q https://github.com/FriendsOfPHP/pickle/releases/latest/download/pickle.phar -O /usr/local/bin/pickle && chmod +x /usr/local/bin/pickle
 
 # install basic PECL extensions
-' . (
-$phpVersion < 8
-? 'RUN pickle install imagick && docker-php-ext-enable imagick'
-// @TODO install using pickle once imagick 3.4.5 is released, see https://github.com/Imagick/imagick/releases
-: 'RUN git clone https://github.com/Imagick/imagick && cd imagick \
-    && phpize && ./configure && make all && make install \
-    && echo "extension=imagick.so" >> /usr/local/etc/php/conf.d/docker-php-ext-imagick.ini'
-) . '
+RUN install-php-extensions imagick
 RUN install-php-extensions igbinary
 RUN pickle install redis --no-interaction && docker-php-ext-enable redis
 
@@ -50,7 +43,7 @@ RUN install-php-extensions pdo_oci
 
 
 # remove build deps
-RUN apk del --purge $PHPIZE_DEPS gmp-dev icu-dev libpng-dev imagemagick-dev \
+RUN apk del --purge $PHPIZE_DEPS gmp-dev icu-dev libpng-dev \
         tidyhtml-dev libxslt-dev libzip-dev postgresql-dev imap-dev
 
 
