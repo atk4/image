@@ -17,7 +17,7 @@ foreach ([''] as $imageType) {
         $dockerFile = 'FROM php:' . $phpVersion . '-alpine as base
 
 # install basic PHP
-RUN apk add bash git jq $PHPIZE_DEPS \
+RUN apk add bash git $PHPIZE_DEPS \
         gmp gmp-dev icu-libs icu-dev libpng libpng-dev imagemagick imagemagick-dev \
         tidyhtml-libs tidyhtml-dev libxslt libxslt-dev libzip libzip-dev \
         mysql-client postgresql-client postgresql-dev c-client imap-dev \
@@ -57,7 +57,6 @@ RUN apk del --purge $PHPIZE_DEPS gmp-dev icu-dev libpng-dev imagemagick-dev \
 
 # install Composer & other tools
 RUN install-php-extensions @composer
-RUN npm install -g less clean-css uglify-js
 
 
 # run basic tests
