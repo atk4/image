@@ -7,20 +7,17 @@ RUN apk add $PHPIZE_DEPS gmp gmp-dev icu-libs icu-dev libpng libpng-dev \
         tidyhtml-libs tidyhtml-dev libxslt libxslt-dev libzip libzip-dev \
         mysql-client postgresql-client postgresql-dev c-client imap-dev \
     && docker-php-ext-install bcmath gmp intl exif gd sockets tidy xsl zip mysqli pdo_mysql pdo_pgsql pcntl imap opcache
-RUN wget -q https://github.com/FriendsOfPHP/pickle/releases/latest/download/pickle.phar -O /usr/local/bin/pickle && chmod +x /usr/local/bin/pickle
 
 # install basic PECL extensions
 RUN install-php-extensions imagick
 RUN install-php-extensions igbinary
-RUN pickle install redis --no-interaction && docker-php-ext-enable redis
+RUN install-php-extensions redis
 
 # install xdebug PHP extension
 RUN install-php-extensions xdebug
 
-
 # install Microsoft ODBC drivers & pdo_sqlsrv PHP extension
 RUN install-php-extensions pdo_sqlsrv
-
 
 # install Oracle Instant client & pdo_oci PHP extension
 RUN install-php-extensions pdo_oci
