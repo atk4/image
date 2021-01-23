@@ -11,9 +11,13 @@ $cfLabelFromName = function(string $prefix, string $n): string {
     }, $n);
 };
 
+$phpVersions = ['7.2', '7.3', '7.4', '8.0'];
+$imageTypes = [''];
+$targetNames = ['base', 'npm', 'selenium'];
+
 $imageNames = [];
-foreach ([''] as $imageType) {
-    foreach (['7.2', '7.3', '7.4', '8.0'] as $phpVersion) {
+foreach ($imageTypes as $imageType) {
+    foreach ($phpVersions as $phpVersion) {
         $dockerFile = 'FROM php:' . $phpVersion . '-alpine as base
 
 # install common PHP extensions
@@ -87,8 +91,6 @@ RUN apk add firefox \
         file_put_contents($dataDir . '/' . $imageName . '/Dockerfile', $dockerFile);
     }
 }
-
-$targetNames = ['base', 'npm', 'selenium'];
 
 $imageNamesExtended = array_merge(
     ...array_map(function ($targetName) use ($imageNames) {
