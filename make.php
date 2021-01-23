@@ -17,12 +17,12 @@ foreach ([''] as $imageType) {
         $dockerFile = 'FROM php:' . $phpVersion . '-alpine as base
 
 # install basic PHP
-RUN apk add bash git npm
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
-RUN apk add $PHPIZE_DEPS gmp gmp-dev icu-libs icu-dev libpng libpng-dev \
+RUN install-php-extensions gmp
+RUN apk add $PHPIZE_DEPS icu-libs icu-dev libpng libpng-dev \
         tidyhtml-libs tidyhtml-dev libxslt libxslt-dev libzip libzip-dev \
         mysql-client postgresql-client postgresql-dev c-client imap-dev \
-    && docker-php-ext-install bcmath gmp intl exif gd sockets tidy xsl zip mysqli pdo_mysql pdo_pgsql pcntl imap opcache
+    && docker-php-ext-install bcmath intl exif gd sockets tidy xsl zip mysqli pdo_mysql pdo_pgsql pcntl imap opcache
 
 # install basic PECL extensions
 RUN install-php-extensions imagick
@@ -40,12 +40,13 @@ RUN install-php-extensions pdo_oci
 
 
 # remove build deps
-RUN apk del --purge $PHPIZE_DEPS gmp-dev icu-dev libpng-dev \
+RUN apk del --purge $PHPIZE_DEPS icu-dev libpng-dev \
         tidyhtml-dev libxslt-dev libzip-dev postgresql-dev imap-dev
 
 
 # install Composer & other tools
 RUN install-php-extensions @composer
+RUN apk add bash git npm
 
 
 # run basic tests
