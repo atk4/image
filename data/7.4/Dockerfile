@@ -1,14 +1,13 @@
 FROM php:7.4-alpine as base
 
 # install basic PHP
-RUN apk add bash git $PHPIZE_DEPS \
-        gmp gmp-dev icu-libs icu-dev libpng libpng-dev imagemagick imagemagick-dev \
+RUN apk add bash git npm
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+RUN apk add $PHPIZE_DEPS gmp gmp-dev icu-libs icu-dev libpng libpng-dev imagemagick imagemagick-dev \
         tidyhtml-libs tidyhtml-dev libxslt libxslt-dev libzip libzip-dev \
         mysql-client postgresql-client postgresql-dev c-client imap-dev \
-        npm && \
-    docker-php-ext-install bcmath gmp intl exif gd sockets tidy xsl zip mysqli pdo_mysql pdo_pgsql pcntl imap opcache
+    && docker-php-ext-install bcmath gmp intl exif gd sockets tidy xsl zip mysqli pdo_mysql pdo_pgsql pcntl imap opcache
 RUN wget -q https://github.com/FriendsOfPHP/pickle/releases/latest/download/pickle.phar -O /usr/local/bin/pickle && chmod +x /usr/local/bin/pickle
-COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
 # install basic PECL extensions
 RUN pickle install imagick && docker-php-ext-enable imagick
@@ -44,14 +43,14 @@ RUN composer diagnose
 FROM base as selenium
 
 # install Selenium
-RUN apk add openjdk8-jre-base xvfb ttf-freefont && \
-    curl --fail --silent --show-error -L "https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar" -o /opt/selenium-server-standalone.jar
+RUN apk add openjdk8-jre-base xvfb ttf-freefont \
+    && curl --fail --silent --show-error -L "https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar" -o /opt/selenium-server-standalone.jar
 
 # install Chrome
 RUN apk add chromium chromium-chromedriver
 
 # install Firefox
-RUN apk add firefox && \
-    curl --fail --silent --show-error -L "https://github.com/mozilla/geckodriver/releases/download/v0.28.0/geckodriver-v0.28.0-linux64.tar.gz" -o /tmp/geckodriver.tar.gz && \
-    tar -C /opt -zxf /tmp/geckodriver.tar.gz && rm /tmp/geckodriver.tar.gz && \
-    chmod 755 /opt/geckodriver && ln -s /opt/geckodriver /usr/bin/geckodriver
+RUN apk add firefox \
+    && curl --fail --silent --show-error -L "https://github.com/mozilla/geckodriver/releases/download/v0.28.0/geckodriver-v0.28.0-linux64.tar.gz" -o /tmp/geckodriver.tar.gz \
+    && tar -C /opt -zxf /tmp/geckodriver.tar.gz && rm /tmp/geckodriver.tar.gz \
+    && chmod 755 /opt/geckodriver && ln -s /opt/geckodriver /usr/bin/geckodriver
