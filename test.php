@@ -35,3 +35,9 @@ if (count($missingExts) > 0) {
     echo 'ERROR - missing php extensions: ' . implode(', ', $missingExts) . "\n";
     exit(1);
 }
+
+$xdebugConfPath = '/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini';
+if (!file_exists($xdebugConfPath)) {
+    echo 'ERROR - missing xdebug configuration: ' . $xdebugConfPath . "\n";
+    exit(1);
+}
