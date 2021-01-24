@@ -16,7 +16,6 @@ RUN install-php-extensions bcmath \
     pdo_mysql \
     pdo_oci \
     pdo_pgsql \
-    redis \
     sockets \
     tidy \
     xdebug \
