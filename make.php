@@ -11,13 +11,14 @@ $cfLabelFromName = function(string $prefix, string $n): string {
     }, $n);
 };
 
-$phpVersions = ['7.2', '7.3', '7.4', '8.0'];
+$phpVersions = ['7.2', '7.3', '7.4', '8.0', '8.1'];
 $imageTypes = [''];
 $targetNames = ['base', 'npm', 'selenium'];
 
 $aliasesPhpVersions = [
     '7.4' => ['7.x'],
     '8.0' => ['8.x', 'latest'],
+    '8.1' => ['nightly'],
 ];
 
 $genImageTags = function(string $imageName) use ($aliasesPhpVersions): array {
@@ -37,7 +38,7 @@ $genImageTags = function(string $imageName) use ($aliasesPhpVersions): array {
 $imageNames = [];
 foreach ($imageTypes as $imageType) {
     foreach ($phpVersions as $phpVersion) {
-        $dockerFile = 'FROM php:' . $phpVersion . '-alpine as base
+        $dockerFile = 'FROM ' . ($phpVersion === '8.1' ? 'phpdaily/php:8.1-dev' : 'php:' . $phpVersion . '-alpine') . ' as base
 
 # install common PHP extensions
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/

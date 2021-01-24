@@ -8,14 +8,17 @@ This repository builds and publishes the following images:
 - `7.3`
 - `7.4` `7.x`
 - `8.0` `8.x` `latest`
+- `8.1` `nightly`
 - `7.2-npm`
 - `7.3-npm`
 - `7.4-npm` `7.x-npm`
 - `8.0-npm` `8.x-npm` `latest-npm`
+- `8.1-npm` `nightly-npm`
 - `7.2-selenium`
 - `7.3-selenium`
 - `7.4-selenium` `7.x-selenium`
 - `8.0-selenium` `8.x-selenium` `latest-selenium`
+- `8.1-selenium` `nightly-selenium`
 
 ## Running Locally
 

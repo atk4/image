@@ -45,6 +45,13 @@ steps:
         tag: "${{CF_BUILD_ID}}-8.0"
         registry: atk4
         dockerfile: data/8.0/Dockerfile
+      b8_dot_1:
+        type: build
+        image_name: atk4/image
+        target: base
+        tag: "${{CF_BUILD_ID}}-8.1"
+        registry: atk4
+        dockerfile: data/8.1/Dockerfile
 
   build_npm:
     type: parallel
@@ -78,6 +85,13 @@ steps:
         tag: "${{CF_BUILD_ID}}-8.0-npm"
         registry: atk4
         dockerfile: data/8.0/Dockerfile
+      b8_dot_1_dash_npm:
+        type: build
+        image_name: atk4/image
+        target: npm
+        tag: "${{CF_BUILD_ID}}-8.1-npm"
+        registry: atk4
+        dockerfile: data/8.1/Dockerfile
 
   build_selenium:
     type: parallel
@@ -111,6 +125,13 @@ steps:
         tag: "${{CF_BUILD_ID}}-8.0-selenium"
         registry: atk4
         dockerfile: data/8.0/Dockerfile
+      b8_dot_1_dash_selenium:
+        type: build
+        image_name: atk4/image
+        target: selenium
+        tag: "${{CF_BUILD_ID}}-8.1-selenium"
+        registry: atk4
+        dockerfile: data/8.1/Dockerfile
 
   test:
     type: parallel
@@ -136,6 +157,11 @@ steps:
         registry: atk4
         commands:
           - php test.php
+      t8_dot_1:
+        image: "atk4/image:${{CF_BUILD_ID}}-8.1"
+        registry: atk4
+        commands:
+          - php test.php
       t7_dot_2_dash_npm:
         image: "atk4/image:${{CF_BUILD_ID}}-7.2-npm"
         registry: atk4
@@ -156,6 +182,11 @@ steps:
         registry: atk4
         commands:
           - php test.php
+      t8_dot_1_dash_npm:
+        image: "atk4/image:${{CF_BUILD_ID}}-8.1-npm"
+        registry: atk4
+        commands:
+          - php test.php
       t7_dot_2_dash_selenium:
         image: "atk4/image:${{CF_BUILD_ID}}-7.2-selenium"
         registry: atk4
@@ -173,6 +204,11 @@ steps:
           - php test.php
       t8_dot_0_dash_selenium:
         image: "atk4/image:${{CF_BUILD_ID}}-8.0-selenium"
+        registry: atk4
+        commands:
+          - php test.php
+      t8_dot_1_dash_selenium:
+        image: "atk4/image:${{CF_BUILD_ID}}-8.1-selenium"
         registry: atk4
         commands:
           - php test.php
@@ -220,6 +256,16 @@ steps:
         type: push
         registry: atk4
         tag: "latest"
+      p8_dot_1:
+        candidate: "${{b8_dot_1}}"
+        type: push
+        registry: atk4
+        tag: "8.1"
+      pnightly:
+        candidate: "${{bnightly}}"
+        type: push
+        registry: atk4
+        tag: "nightly"
       p7_dot_2_dash_npm:
         candidate: "${{b7_dot_2_dash_npm}}"
         type: push
@@ -255,6 +301,16 @@ steps:
         type: push
         registry: atk4
         tag: "latest-npm"
+      p8_dot_1_dash_npm:
+        candidate: "${{b8_dot_1_dash_npm}}"
+        type: push
+        registry: atk4
+        tag: "8.1-npm"
+      pnightly_dash_npm:
+        candidate: "${{bnightly_dash_npm}}"
+        type: push
+        registry: atk4
+        tag: "nightly-npm"
       p7_dot_2_dash_selenium:
         candidate: "${{b7_dot_2_dash_selenium}}"
         type: push
@@ -290,3 +346,13 @@ steps:
         type: push
         registry: atk4
         tag: "latest-selenium"
+      p8_dot_1_dash_selenium:
+        candidate: "${{b8_dot_1_dash_selenium}}"
+        type: push
+        registry: atk4
+        tag: "8.1-selenium"
+      pnightly_dash_selenium:
+        candidate: "${{bnightly_dash_selenium}}"
+        type: push
+        registry: atk4
+        tag: "nightly-selenium"
