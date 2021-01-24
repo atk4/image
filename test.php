@@ -31,6 +31,11 @@ $missingExts = array_diff([
     'zip',
 ], get_loaded_extensions());
 
+// TODO remove once pdo_sqlsrv is avaiable for PHP 8.1
+if (PHP_MAJOR_VERSION === 8 && PHP_MINOR_VERSION === 1) {
+    unset($missingExts[array_search('pdo_sqlsrv', $missingExts)]);
+}
+
 if (count($missingExts) > 0) {
     echo 'ERROR - missing php extensions: ' . implode(', ', $missingExts) . "\n";
     exit(1);

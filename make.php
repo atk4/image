@@ -56,8 +56,8 @@ RUN install-php-extensions bcmath \
     pdo_mysql \
     pdo_oci \
     pdo_pgsql \
-    pdo_sqlsrv \
-    redis \
+' . ($phpVersion === '8.1' ? '' : '    pdo_sqlsrv \
+') . '    redis \
     sockets \
     tidy \
     xdebug \
