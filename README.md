@@ -2,7 +2,7 @@
 
 <a href="https://g.codefresh.io/public/accounts/romaninsh/pipelines/new/5f6210a9ce7766265b1315f5"><img src="https://g.codefresh.io/api/badges/pipeline/romaninsh/atk4%2Fimage?key=eyJhbGciOiJIUzI1NiJ9.NWRmMjhjZmUxNGEzNzBmNTE4N2JmMjZm.VwoKvoggIuaMYdKMVChMeTX452-jZ5eNfA5t-vO1yXM&date=1600269361326"></a>
 
-This repository builds and publishes the following images:
+This repository builds `atk4/image` image and publishes the following tags:
 
 - `7.2`
 - `7.3`
