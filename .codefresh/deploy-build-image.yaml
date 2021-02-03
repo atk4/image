@@ -201,7 +201,7 @@ steps:
         registry: atk4
         tag: "7.4"
       p7_dot_x:
-        candidate: "${{b7_dot_x}}"
+        candidate: "${{b7_dot_4}}"
         type: push
         registry: atk4
         tag: "7.x"
@@ -211,12 +211,12 @@ steps:
         registry: atk4
         tag: "8.0"
       p8_dot_x:
-        candidate: "${{b8_dot_x}}"
+        candidate: "${{b8_dot_0}}"
         type: push
         registry: atk4
         tag: "8.x"
       platest:
-        candidate: "${{blatest}}"
+        candidate: "${{b8_dot_0}}"
         type: push
         registry: atk4
         tag: "latest"
@@ -236,7 +236,7 @@ steps:
         registry: atk4
         tag: "7.4-npm"
       p7_dot_x_dash_npm:
-        candidate: "${{b7_dot_x_dash_npm}}"
+        candidate: "${{b7_dot_4_dash_npm}}"
         type: push
         registry: atk4
         tag: "7.x-npm"
@@ -246,12 +246,12 @@ steps:
         registry: atk4
         tag: "8.0-npm"
       p8_dot_x_dash_npm:
-        candidate: "${{b8_dot_x_dash_npm}}"
+        candidate: "${{b8_dot_0_dash_npm}}"
         type: push
         registry: atk4
         tag: "8.x-npm"
       platest_dash_npm:
-        candidate: "${{blatest_dash_npm}}"
+        candidate: "${{b8_dot_0_dash_npm}}"
         type: push
         registry: atk4
         tag: "latest-npm"
@@ -271,7 +271,7 @@ steps:
         registry: atk4
         tag: "7.4-selenium"
       p7_dot_x_dash_selenium:
-        candidate: "${{b7_dot_x_dash_selenium}}"
+        candidate: "${{b7_dot_4_dash_selenium}}"
         type: push
         registry: atk4
         tag: "7.x-selenium"
@@ -281,12 +281,12 @@ steps:
         registry: atk4
         tag: "8.0-selenium"
       p8_dot_x_dash_selenium:
-        candidate: "${{b8_dot_x_dash_selenium}}"
+        candidate: "${{b8_dot_0_dash_selenium}}"
         type: push
         registry: atk4
         tag: "8.x-selenium"
       platest_dash_selenium:
-        candidate: "${{blatest_dash_selenium}}"
+        candidate: "${{b8_dot_0_dash_selenium}}"
         type: push
         registry: atk4
         tag: "latest-selenium"

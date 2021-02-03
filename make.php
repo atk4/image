@@ -171,12 +171,12 @@ steps:
           - master
     steps:
 ' . implode("\n", array_map(function ($imageName) use ($genImageTags, $cfLabelFromName) {
-    return implode("\n", array_map(function ($imageName) use ($cfLabelFromName) {
-        return '      ' . $cfLabelFromName('p', $imageName) . ':
+    return implode("\n", array_map(function ($imageTag) use ($cfLabelFromName, $imageName) {
+        return '      ' . $cfLabelFromName('p', $imageTag) . ':
         candidate: "${{' . $cfLabelFromName('b', $imageName) . '}}"
         type: push
         registry: atk4
-        tag: "' . $imageName . '"';
+        tag: "' . $imageTag . '"';
     }, $genImageTags($imageName)));
 }, $imageNamesExtended)).'
 ';
@@ -236,9 +236,9 @@ $readmeFile = '# Container Images for ATK
 
 This repository builds `atk4/image` image and publishes the following tags:
 
-' . implode("\n", array_map(function ($imageName) use ($genImageTags, $cfLabelFromName) {
-    return '- ' . implode(' ', array_map(function ($imageName) {
-        return '`' . $imageName . '`';
+' . implode("\n", array_map(function ($imageName) use ($genImageTags) {
+    return '- ' . implode(' ', array_map(function ($imageTag) {
+        return '`' . $imageTag . '`';
     }, $genImageTags($imageName)));
 }, $imageNamesExtended)).'
 
