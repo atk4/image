@@ -45,7 +45,7 @@ RUN apk add npm
 FROM npm as selenium
 
 # install Selenium
-RUN apk add openjdk8-jre-base xvfb ttf-freefont \
+RUN apk add openjdk11-jre-headless xvfb ttf-freefont \
     && curl --fail --silent --show-error -L "https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar" -o /opt/selenium-server-standalone.jar
 
 # install Chrome
