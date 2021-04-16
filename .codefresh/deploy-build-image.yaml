@@ -11,7 +11,7 @@ steps:
     stage: prepare
     type: git-clone
     repo: atk4/image
-    revision: "${{CF_BRANCH}}"
+    revision: master
 
   build_base:
     type: parallel
