@@ -67,7 +67,7 @@ RUN install-php-extensions bcmath \
 RUN install-php-extensions @composer
 
 # install other tools
-RUN apk add bash git
+RUN apk add bash git make
 
 # run basic tests
 COPY test.php ./
