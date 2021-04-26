@@ -132,7 +132,7 @@ steps:
     stage: prepare
     type: git-clone
     repo: atk4/image
-    revision: "${{CF_BRANCH}}"
+    revision: master
 
 ' . implode("\n\n", array_map(function ($targetName) use ($imageNames, $cfLabelFromName) {
     return '  ' . $cfLabelFromName('build_', $targetName) . ':
@@ -145,7 +145,6 @@ steps:
         image_name: atk4/image
         target: ' . $targetName . '
         tag: "${{CF_BUILD_ID}}-' . $imageName . ($targetName === 'base' ? '' : '-' . $targetName) . '"
-        registry: atk4
         dockerfile: data/' . $imageName . '/Dockerfile';
     }, $imageNames));
 }, $targetNames)) . '
@@ -157,7 +156,6 @@ steps:
 ' . implode("\n", array_map(function ($imageName) use ($cfLabelFromName) {
     return '      ' . $cfLabelFromName('t', $imageName) . ':
         image: "atk4/image:${{CF_BUILD_ID}}-' . $imageName . '"
-        registry: atk4
         commands:
           - php test.php';
 }, $imageNamesExtended)) . '
@@ -189,7 +187,7 @@ on:
   pull_request:
   push:
   schedule:
-    - cron: \'20 */2 * * *\'
+    - cron: \'20 2 * * *\'
 
 jobs:
   unit:
