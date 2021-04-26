@@ -67,7 +67,7 @@ RUN install-php-extensions bcmath \
 RUN install-php-extensions @composer
 
 # install other tools
-RUN apk add bash git make
+RUN apk add --no-cache bash git make
 
 # run basic tests
 COPY test.php ./
@@ -78,20 +78,20 @@ RUN composer diagnose
 FROM base as npm
 
 # install npm
-RUN apk add npm
+RUN apk add --no-cache npm
 
 
 FROM npm as selenium
 
 # install Selenium
-RUN apk add openjdk11-jre-headless xvfb ttf-freefont \
+RUN apk add --no-cache openjdk11-jre-headless xvfb ttf-freefont \
     && curl --fail --silent --show-error -L "https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar" -o /opt/selenium-server-standalone.jar
 
 # install Chrome
-RUN apk add chromium chromium-chromedriver
+RUN apk add --no-cache chromium chromium-chromedriver
 
 # install Firefox
-RUN apk add firefox \
+RUN apk add --no-cache firefox \
     && curl --fail --silent --show-error -L "https://github.com/mozilla/geckodriver/releases/download/v0.28.0/geckodriver-v0.28.0-linux64.tar.gz" -o /tmp/geckodriver.tar.gz \
     && tar -C /opt -zxf /tmp/geckodriver.tar.gz && rm /tmp/geckodriver.tar.gz \
     && chmod 755 /opt/geckodriver && ln -s /opt/geckodriver /usr/bin/geckodriver
@@ -132,7 +132,7 @@ steps:
     stage: prepare
     type: git-clone
     repo: atk4/image
-    revision: "${{CF_BRANCH}}"
+    revision: master
 
 ' . implode("\n\n", array_map(function ($targetName) use ($imageNames, $cfLabelFromName) {
     return '  ' . $cfLabelFromName('build_', $targetName) . ':
