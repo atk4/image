@@ -67,7 +67,9 @@ RUN install-php-extensions bcmath \
 RUN install-php-extensions @composer
 
 # install other tools
-RUN apk add --no-cache bash git make
+RUN apk add --no-cache bash git make \
+    && git config --global url."https://github.com/".insteadOf "git@github.com:" \
+    && git config --global url."https://github.com".insteadOf "ssh://git@github.com"
 
 # run basic tests
 COPY test.php ./
