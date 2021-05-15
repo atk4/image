@@ -1,43 +1,63 @@
 <?php
 
-$cfLabelFromName = function(string $prefix, string $n): string {
-    return $prefix . preg_replace_callback('~\W~', function ($matches) {
-        return '_'
-            . ([
-                '.' => 'dot',
-                '-' => 'dash',
-            ][$matches[0]] ?? '0x' . bin2hex($matches[0]))
-            . '_';
-    }, $n);
-};
-
 $phpVersions = ['7.2', '7.3', '7.4', '8.0'];
-$imageTypes = [''];
+$osNames = ['alpine', 'debian'];
 $targetNames = ['base', 'npm', 'selenium'];
 
 $aliasesPhpVersions = [
     '7.4' => ['7.x'],
     '8.0' => ['8.x', 'latest'],
 ];
+$defaultOs = 'alpine';
 
-$genImageTags = function(string $imageName) use ($aliasesPhpVersions): array {
-    $res = [$imageName];
+$createFullName = function (string $imageName, string $targetName): string {
+    return $imageName . ($targetName === 'base' ? '' : '-' . $targetName);
+};
+
+$genImageTags = function(string $imageName) use ($aliasesPhpVersions, $defaultOs): array {
+    $tags = [$imageName];
     foreach ($aliasesPhpVersions as $phpVersion => $aliases) {
         foreach ($aliases as $alias) {
             $v = preg_replace('~(?<!\d)' . preg_quote($phpVersion, '~') . '(?!\d)~', $alias, $imageName);
             if ($v !== $imageName) {
-                $res[] = $v;
+                $tags[] = $v;
             }
         }
     }
 
-    return $res;
+    $tagsBak = $tags;
+    $tags = [];
+    foreach ($tagsBak as $tag) {
+        $v = preg_replace('~-' . preg_quote($defaultOs, '~') . '(?!\w)~', '', $tag);
+        if ($v !== $tag) {
+            $tags[] = $v;
+        }
+        $tags[] = $tag;
+    }
+
+    return $tags;
 };
 
 $imageNames = [];
-foreach ($imageTypes as $imageType) {
+foreach ($osNames as $osName) {
     foreach ($phpVersions as $phpVersion) {
-        $dockerFile = 'FROM php:' . $phpVersion . '-alpine as base
+        $genPackageInstallCommand = function (array $packages) use ($osName) {
+            $and = ' \\' . "\n" . '    && ';
+
+            if ($osName === 'alpine') {
+                return 'apk update' . $and . 'apk add ' . implode(' ', $packages) . $and . 'rm -rf /var/cache/apk/*';
+            }
+
+            return 'apt-get -y update' . $and . 'apt-get -y install ' . implode(' ', $packages) . $and . 'apt-get -y autoremove && apt-get clean';
+        };
+
+        $dockerFile = 'FROM php:' . $phpVersion . '-' . ['alpine' => 'alpine', 'debian' => 'buster'][$osName] . ' as base
+
+# install basic system tools
+RUN ' . ($osName === 'debian' ? '(seq 1 8 | xargs -I{} mkdir -p /usr/share/man/man{}) \\' . "\n" . '    && ' : '')
+    . $genPackageInstallCommand(['bash', 'git', 'make']) . ' \
+    && git config --global url."https://github.com/".insteadOf "git@github.com:" \
+    && git config --global url."https://github.com".insteadOf "ssh://git@github.com"
 
 # install common PHP extensions
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
@@ -66,9 +86,6 @@ RUN install-php-extensions bcmath \
 # install Composer
 RUN install-php-extensions @composer
 
-# install other tools
-RUN apk add bash git make
-
 # run basic tests
 COPY test.php ./
 RUN php test.php && rm test.php
@@ -78,27 +95,27 @@ RUN composer diagnose
 FROM base as npm
 
 # install npm
-RUN apk add npm
+RUN ' . $genPackageInstallCommand(['npm']) . '
 
 
 FROM npm as selenium
 
 # install Selenium
-RUN apk add openjdk11-jre-headless xvfb ttf-freefont \
+RUN ' . $genPackageInstallCommand(['alpine' => ['openjdk11-jre-headless', 'xvfb', 'ttf-freefont'], 'debian' => ['openjdk-11-jre-headless', 'xvfb', 'fonts-freefont-ttf']][$osName]) . ' \
     && curl --fail --silent --show-error -L "https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar" -o /opt/selenium-server-standalone.jar
 
 # install Chrome
-RUN apk add chromium chromium-chromedriver
+RUN ' . $genPackageInstallCommand(['alpine' => ['chromium', 'chromium-chromedriver'], 'debian' => ['chromium', 'chromium-driver']][$osName]) . '
 
 # install Firefox
-RUN apk add firefox \
-    && curl --fail --silent --show-error -L "https://github.com/mozilla/geckodriver/releases/download/v0.28.0/geckodriver-v0.28.0-linux64.tar.gz" -o /tmp/geckodriver.tar.gz \
+RUN ' . $genPackageInstallCommand(['alpine' => ['firefox'], 'debian' => ['firefox-esr']][$osName]) . ' \
+    && curl --fail --silent --show-error -L "https://github.com/mozilla/geckodriver/releases/download/v0.29.1/geckodriver-v0.29.1-linux64.tar.gz" -o /tmp/geckodriver.tar.gz \
     && tar -C /opt -zxf /tmp/geckodriver.tar.gz && rm /tmp/geckodriver.tar.gz \
     && chmod 755 /opt/geckodriver && ln -s /opt/geckodriver /usr/bin/geckodriver
 ';
 
         $dataDir = __DIR__ . '/data';
-        $imageName = $phpVersion . ($imageType !== '' ? '-' : '') . $imageType;
+        $imageName = $phpVersion . '-' . $osName;
         $imageNames[] = $imageName;
 
         if (!is_dir($dataDir)) {
@@ -111,77 +128,6 @@ RUN apk add firefox \
     }
 }
 
-$imageNamesExtended = array_merge(
-    ...array_map(function ($targetName) use ($imageNames) {
-        return array_map(function($imageName) use ($targetName) {
-            return $imageName . ($targetName === 'base' ? '' : '-' . $targetName);
-        }, $imageNames);
-    }, $targetNames)
-);
-
-$codefreshFile = 'version: "1.0"
-stages:
-  - prepare
-' . implode("\n", array_map(function ($targetName) use ($cfLabelFromName) {
-    return '  - ' . $cfLabelFromName('build_', $targetName);
-}, $targetNames)) . '
-  - test
-  - push
-steps:
-  main_clone:
-    stage: prepare
-    type: git-clone
-    repo: atk4/image
-    revision: "${{CF_BRANCH}}"
-
-' . implode("\n\n", array_map(function ($targetName) use ($imageNames, $cfLabelFromName) {
-    return '  ' . $cfLabelFromName('build_', $targetName) . ':
-    type: parallel
-    stage: ' . $cfLabelFromName('build_', $targetName) . '
-    steps:
-' . implode("\n", array_map(function ($imageName) use ($targetName, $cfLabelFromName) {
-        return '      ' . $cfLabelFromName('b', $imageName . ($targetName === 'base' ? '' : '-' . $targetName)) . ':
-        type: build
-        image_name: atk4/image
-        target: ' . $targetName . '
-        tag: "${{CF_BUILD_ID}}-' . $imageName . ($targetName === 'base' ? '' : '-' . $targetName) . '"
-        registry: atk4
-        dockerfile: data/' . $imageName . '/Dockerfile';
-    }, $imageNames));
-}, $targetNames)) . '
-
-  test:
-    type: parallel
-    stage: test
-    steps:
-' . implode("\n", array_map(function ($imageName) use ($cfLabelFromName) {
-    return '      ' . $cfLabelFromName('t', $imageName) . ':
-        image: "atk4/image:${{CF_BUILD_ID}}-' . $imageName . '"
-        registry: atk4
-        commands:
-          - php test.php';
-}, $imageNamesExtended)) . '
-
-  push:
-    type: parallel
-    stage: push
-    when:
-      branch:
-        only:
-          - master
-    steps:
-' . implode("\n", array_map(function ($imageName) use ($genImageTags, $cfLabelFromName) {
-    return implode("\n", array_map(function ($imageTag) use ($cfLabelFromName, $imageName) {
-        return '      ' . $cfLabelFromName('p', $imageTag) . ':
-        candidate: "${{' . $cfLabelFromName('b', $imageName) . '}}"
-        type: push
-        registry: atk4
-        tag: "' . $imageTag . '"';
-    }, $genImageTags($imageName)));
-}, $imageNamesExtended)).'
-';
-file_put_contents(__DIR__ . '/.codefresh/deploy-build-image.yaml', $codefreshFile);
-
 
 $ciFile = 'name: CI
 
@@ -189,14 +135,15 @@ on:
   pull_request:
   push:
   schedule:
-    - cron: \'20 */2 * * *\'
+    - cron: \'20 2 * * *\'
 
 jobs:
   unit:
     name: Templating
+    if: github.event_name != \'push\' || github.ref == \'refs/heads/master\' || github.ref == \'refs/heads/develop\'
     runs-on: ubuntu-latest
     container:
-      image: atk4/image
+      image: ghcr.io/mvorisek/image-php
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -210,6 +157,9 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    env:
+      REGISTRY_NAME: ghcr.io
+      REGISTRY_IMAGE_NAME: ghcr.io/${{ github.repository }}
     strategy:
       fail-fast: false
       matrix:
@@ -220,27 +170,63 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
-      - name: Build Dockerfile
+' . implode("\n", array_map(function ($targetName) {
+    return '
+      - name: \'Target "' . $targetName . ' - Build Dockerfile\'
         # try to build twice to suppress random network issues with Github Actions
         run: >-
-          docker build -f data/${{ matrix.imageName }}/Dockerfile ./
-          || docker build -f data/${{ matrix.imageName }}/Dockerfile ./
+          sed -i \'s~^[ \t]*~~\' data/${{ matrix.imageName }}/Dockerfile
+          && (' . implode("\n" . '          || ', array_fill(0, 2, 'docker build -f data/${{ matrix.imageName }}/Dockerfile --target "' . $targetName . '" -t ci-target:' . $targetName . ' ./')) . ')
+
+      - name: \'Target "' . $targetName . '" - Display layer sizes\'
+        run: >-
+          docker history --no-trunc --format "table {{.CreatedSince}}\t{{.Size}}\t{{.CreatedBy}}" $(docker images --no-trunc --format=\'{{.ID}}\' | head -1)
+          && docker images --no-trunc --format "Total size: {{.Size}}\t{{.ID}}" | grep $(docker images --no-trunc --format=\'{{.ID}}\' | head -1) | cut -f1';
+}, $targetNames)) .'
+
+      - name: Login to registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.REGISTRY_NAME }}
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: \'Push tags to registry\'
+        if: github.ref == \'refs/heads/master\'
+        run: >-
+          ' . implode("\n" . '          && ', array_map(function ($imageName) use ($targetNames, $genImageTags, $createFullName) {
+    return 'if [ "${{ matrix.imageName }}" == "' . $imageName . '" ]; then
+          ' . implode("\n" . '          && ', array_merge(...array_map(function ($targetName) use ($genImageTags, $createFullName, $imageName) {
+        return array_map(function ($imageTag) use ($targetName) {
+            return 'docker tag "ci-target:' . $targetName . '" "$REGISTRY_IMAGE_NAME:' . $imageTag . '" && docker push "$REGISTRY_IMAGE_NAME:' . $imageTag . '"';
+        }, $genImageTags($createFullName($imageName, $targetName)));
+    }, $targetNames))) . '
+          ; fi';
+}, $imageNames)) . '
 ';
 file_put_contents(__DIR__ . '/.github/workflows/ci.yml', $ciFile);
 
 
-$readmeFile = '# Container Images for ATK
+$githubRepository = getenv('GITHUB_REPOSITORY') ?: 'atk4/image';
+$registryImageName = getenv('REGISTRY_IMAGE_NAME') ?: 'ghcr.io/' . $githubRepository;
 
-<a href="https://g.codefresh.io/public/accounts/romaninsh/pipelines/new/5f6210a9ce7766265b1315f5"><img src="https://g.codefresh.io/api/badges/pipeline/romaninsh/atk4%2Fimage?key=eyJhbGciOiJIUzI1NiJ9.NWRmMjhjZmUxNGEzNzBmNTE4N2JmMjZm.VwoKvoggIuaMYdKMVChMeTX452-jZ5eNfA5t-vO1yXM&date=1600269361326"></a>
+$readmeFile = '# Docker Images for PHP
 
-This repository builds `atk4/image` image and publishes the following tags:
+<a href="https://github.com/' . $githubRepository . '/actions"><img src="https://github.com/' . $githubRepository . '/workflows/CI/badge.svg" alt="Build Status"></a>
 
-' . implode("\n", array_map(function ($imageName) use ($genImageTags) {
+This repository builds `' . $registryImageName . '` image and publishes the following tags:
+
+' . implode("\n", array_map(function ($imageNameFull) use ($genImageTags) {
     return '- ' . implode(' ', array_map(function ($imageTag) {
         return '`' . $imageTag . '`';
-    }, $genImageTags($imageName)));
-}, $imageNamesExtended)).'
+    }, $genImageTags($imageNameFull)));
+}, array_merge(
+    ...array_map(function ($targetName) use ($imageNames, $createFullName) {
+        return array_map(function($imageName) use ($createFullName, $targetName) {
+            return $createFullName($imageName, $targetName);
+        }, $imageNames);
+    }, $targetNames)
+))).'
 
 ## Running Locally
 
