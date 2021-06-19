@@ -147,7 +147,7 @@ jobs:
     if: github.event_name != \'push\' || github.ref == \'refs/heads/master\' || github.ref == \'refs/heads/develop\'
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/mvorisek/image-php
+      image: atk4/image
     steps:
       - name: Checkout
         uses: actions/checkout@v2
